@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Practical Numerical Optimization: Applications to Biochemistry and Biophysics</title>
+<script type="text/x-mathjax-config">
+  MathJax.Hub.Config({tex2jax: {inlineMath: [['$','$'], ['\\(','\\)']]}});
+</script>
+<script type="text/javascript" async
+  src="https://cdn.mathjax.org/mathjax/latest/MathJax.js?config=TeX-MML-AM_CHTML">
+</script>
+<style>
+body {
+    font-family: Charter;
+    font-size: 14px;
+}
+body h3{
+    margin-left: 15px;
+}
+</style>
+</head>
+
+<body> 
+<i> by Daniel Elnatan </i>
+<p>Sections</p>
+<h1>Practical Numerical Optimization: theory and practice for biologists</h1>
+<h2><a href="#mathrefreshers">Math refreshers</a></h2>
+    <h3>Derivatives and Gradients</h3>
+<h2>Curve fitting I: Linear optimization</h2>
+<h2>Curve fitting II: Non-linear optimization</h2>
+<h2>Fitting vs. Inference</h2>
+<h3>Bayesian statistics</h3>
+
+<h2>Inverse Problems</h2>
+    <h3>Linear inverse problems</h3>
+<p>Contents below</p>
+<div id="mathrefreshers">
+<h1>Math refreshers</h1>
+<h2>Matrix math</h2>
+<h3>Matrix multiplication></h3>
+$$
+A =
+\begin{bmatrix}
+a~b~c \\
+d~e~f \\ 
+g~h~i \\
+j~k~l \\
+\end{bmatrix}_{4 \times 3},~B=
+\begin{bmatrix}
+1~2\\
+3~4\\
+5~6
+\end{bmatrix}_{3 \times 2}
+$$
+<h2>Differentiation</h2>
+When fitting a function or model to a number of observations (along with associated noise per data point, if available), we quantify the goodness of fit as the weighted-discrepancy between data and model. This is commonly called the $\chi^2$, where:
+$$
+\chi^2 = \sum_m^{M}\frac{(D_m - F_m)^2}{\sigma_m^2}
+$$
+Commonly, the function $F$ is evaluated at an independent variable with more than one parameters, for example, we can express a hyperbolic binding curve:<br>
+$$
+F(c_m, A, K_D, B) = A\frac{c_m}{c_m + K_D} + B 
+$$
+where $c_m$ is the concentration and $A,B,K_D$ are amplitude, baseline, and dissociation constant. From here on, I will drop the subscript $m$, which are indices denoting individual observed data, for clarity. Also, multiple parameters that function $F$ takes can be mushed together into one vector, $p$.<br>
+<p>To begin fitting parameters to data, initial guesses are refined iteratively using derivatives to guide each iteration toward minimizing the objective function, or $\chi^2$ value.</p>
+Since the goal is to optimize parameter $p$ within function $F(p)$, we need to express partial derivatives for each parameter, so if we have $N$ parameters, we will end up with $M \times N$ matrix of partial derivatives:
+$$
+\begin{align}
+\frac{\partial\chi^2}{\partial F} \frac{\partial F}{\partial p} &= -2\frac{(D-F)}{\sigma^2} \frac{\partial F}{\partial p} = -2\frac{(D-F)}{\sigma^2} J\\ \\
+J &= \begin{bmatrix} 
+\frac{\partial F_1}{\partial p_1} \cdots \frac{\partial F_1}{\partial p_N} \\
+\vdots \ddots \vdots \\
+\frac{\partial F_M}{\partial p_1} \cdots \frac{\partial F_M}{\partial p_N}
+\end{bmatrix}_{M \times N}
+\end{align}
+$$
+Note the dimensionality of partial derivative is just $1 \times N$, a vector of the same dimension of number of parameters.
+<p> The second derivative can be obtained by differentiating against with respect to parameters $p$:
+$$
+\begin{align}
+\frac{\partial^2\chi^2}{\partial^2 F}\frac{\partial^2 F}{\partial^2 p} &= 2\frac{1}{\sigma^2}\frac{\partial^2 F}{\partial^2 p} = 2\frac{1}{\sigma^2} H\\ \\
+H &= 
+\begin{bmatrix}
+\frac{\partial F_1}{\partial p_1} \cdots \frac{\partial F_M}{\partial p_1} \\
+\vdots \ddots \vdots \\
+\frac{\partial F_1}{\partial p_N} \cdots \frac{\partial F_M}{\partial p_N}
+\end{bmatrix} \times 
+\begin{bmatrix}
+\frac{\partial F_1}{\partial p_1} \cdots \frac{\partial F_1}{\partial p_N} \\
+\vdots \ddots \vdots \\
+\frac{\partial F_M}{\partial p_1} \cdots \frac{\partial F_M}{\partial p_N}
+\end{bmatrix} = 
+\begin{bmatrix}
+\frac{\partial^2 F}{\partial^2 p_1} \cdots \frac{\partial^2 F}{\partial p_1 \partial p_N} \\
+\vdots \ddots \vdots \\
+\frac{\partial^2 F}{\partial p_N \partial p_1} \cdots \frac{\partial^2 F}{\partial^2 p_N}
+\end{bmatrix}\\
+H &= J^T~J
+\end{align}
+$$
+
+<p>To be continued ... </p>
+</div>
+
+</body>
+
+</html>
