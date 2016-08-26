@@ -20,11 +20,13 @@ body h3{
 </head>
 
 <body> 
-<i> by Daniel Elnatan </i>
-<p>Sections</p>
-<h1>Practical Numerical Optimization: theory and practice for biologists</h1>
+
+<h1>Practical Numerical Optimization: theory and practice</h1>
 <h2><a href="#mathrefreshers">Math refreshers</a></h2>
+    <h3>Taylor expansions</h3>
+    <h3>Matrix math</h3>
     <h3>Derivatives and Gradients</h3>
+
 <h2>Curve fitting I: Linear optimization</h2>
 <h2>Curve fitting II: Non-linear optimization</h2>
 <h2>Fitting vs. Inference</h2>
@@ -36,7 +38,7 @@ body h3{
 <div id="mathrefreshers">
 <h1>Math refreshers</h1>
 <h2>Matrix math</h2>
-<h3>Matrix multiplication></h3>
+<h3>Matrix multiplication</h3>
 $$
 A =
 \begin{bmatrix}
@@ -49,9 +51,67 @@ j~k~l \\
 1~2\\
 3~4\\
 5~6
-\end{bmatrix}_{3 \times 2}
+\end{bmatrix}_{3 \times 2} \\
+
+A~B = 
+\begin{bmatrix}
+    \begin{pmatrix}
+    a\\
+    d\\
+    g\\
+    j
+    \end{pmatrix}\cdot 1 + 
+    \begin{pmatrix}
+    b\\
+    e\\
+    h\\
+    k
+    \end{pmatrix} \cdot 3 + 
+    \begin{pmatrix}
+    c\\
+    f\\
+    i\\
+    l
+    \end{pmatrix} \cdot 5,
+    \begin{pmatrix}
+    a\\
+    d\\
+    g\\
+    j
+    \end{pmatrix}\cdot 2 + 
+    \begin{pmatrix}
+    b\\
+    e\\
+    h\\
+    k
+    \end{pmatrix} \cdot 4 + 
+    \begin{pmatrix}
+    c\\
+    f\\
+    i\\
+    l
+    \end{pmatrix} \cdot 6
+\end{bmatrix}_{4 \times 2}
+
 $$
-<h2>Differentiation</h2>
+<h3>Taylor Expansion</h3>
+<p> Local approximation of a function $f(x)$ around a point $x_0$ can be made using its derivatives: </p>
+$$
+\begin{align}
+\widetilde{f}(x) &= f(x_0) + f'(x_0)(x-x_0) + \frac{1}{2} f''(x-x_0)^2 + \cdots \\
+\widetilde{f}(x) &= f(x_0) + f'(x_0)\Delta x + \frac{1}{2} f''\Delta^2 x 
+\end{align}
+$$
+This local approximation is neat because you can derive iterative methods to determine $\Delta x$ which will bring $f(x)$ to a minima/maxima :
+$$
+\begin{align}
+\widetilde{f}(x) \frac{d}{d \Delta x} = f(x_0) + f'(x_0)\Delta x + \frac{1}{2}f''(x_0)\Delta^2 x \frac{d}{d\Delta x} &= 0 \\
+f'(x_0) + f''(x_0)\Delta x &= 0 \\
+f''(x_0) \Delta x &= -f'(x_0) \\
+\Delta x &= -\frac{f'(x_0)}{f''(x_0)}
+\end{align}
+$$
+<h3>Derivatives and Gradients</h3>
 When fitting a function or model to a number of observations (along with associated noise per data point, if available), we quantify the goodness of fit as the weighted-discrepancy between data and model. This is commonly called the $\chi^2$, where:
 $$
 \chi^2 = \sum_m^{M}\frac{(D_m - F_m)^2}{\sigma_m^2}
