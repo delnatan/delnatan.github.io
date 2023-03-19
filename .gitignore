@@ -1,0 +1,8 @@
+# ignore org files
+*.org
+*.org_archive
+*.org~
+*~
+*.bak
+*.swp
+*.swo
