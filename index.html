@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-03-26 Sun 10:38 -->
+<!-- 2023-03-26 Sun 10:47 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Daniel's blog on data visualization, image processing, etc.</title>
@@ -202,9 +202,9 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#orge2618a4">1. Making a multi-channel composite image with custom colormap.</a></li>
-<li><a href="#org52ce26b">2. Emulating an <code>argmax()</code> function</a></li>
-<li><a href="#orgf24f0b5">3. Plotting multi-colored line in matplotlib</a></li>
+<li><a href="#org65e9d84">1. Making a multi-channel composite image with custom colormap.</a></li>
+<li><a href="#orge34b66b">2. Emulating an <code>argmax()</code> function</a></li>
+<li><a href="#orgb5effc0">3. Plotting multi-colored line in matplotlib</a></li>
 </ul>
 </div>
 </div>
@@ -216,19 +216,29 @@ With the help of ChatGPT, finding information has become easier, resulting in a 
 The stylesheet for this document is taken from Nicolas Rougier's <a href="https://github.com/rougier/notebook-mode">https://github.com/rougier/notebook-mode</a>. I'm using his <code>nano-theme</code> for my Emacs.
 </p>
 
-<div id="outline-container-orge2618a4" class="outline-2">
-<h2 id="orge2618a4"><span class="section-number-2">1.</span> Making a multi-channel composite image with custom colormap.</h2>
+<div id="outline-container-org65e9d84" class="outline-2">
+<h2 id="org65e9d84"><span class="section-number-2">1.</span> Making a multi-channel composite image with custom colormap.</h2>
 <div class="outline-text-2" id="text-1">
 <p>
-With a bonus of animating through the Z-slices. The link to the notebook is <a href="./jupyter_notebooks/make_movies_from_timelapse.ipynb">here</a>.
+With a bonus of animating through the Z-slices. The link to the notebook is <a href="https://github.com/delnatan/delnatan.github.io/blob/master/jupyter_notebooks/make_movies_from_timelapse.ipynb">here</a> (via github).
 </p>
+
+<p>
+The tricks used here is a subject for future posts:
+</p>
+<ul class="org-ul">
+<li>displaying a 'frameless' image with <code>imshow()</code> in matplotlib</li>
+<li>mapping a grayscale image to an arbitrary colormap in matplotlib</li>
+<li>making composite multi-channel image with those said colormaps</li>
+<li>saving matplotlib animation as <code>.mp4</code> or an interactive HTML.</li>
+</ul>
 
 <iframe src="./images/cells3d_animation.html" width="500" height="500"></iframe>
 </div>
 </div>
 
-<div id="outline-container-org52ce26b" class="outline-2">
-<h2 id="org52ce26b"><span class="section-number-2">2.</span> Emulating an <code>argmax()</code> function</h2>
+<div id="outline-container-orge34b66b" class="outline-2">
+<h2 id="orge34b66b"><span class="section-number-2">2.</span> Emulating an <code>argmax()</code> function</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 You can emulate <code>argmax()</code> function (returns the index of the maximum value in a sequence) in Python by doing:
@@ -251,15 +261,15 @@ This returns the argmax and the max value from a list. I occasionally use this w
 </div>
 </div>
 
-<div id="outline-container-orgf24f0b5" class="outline-2">
-<h2 id="orgf24f0b5"><span class="section-number-2">3.</span> Plotting multi-colored line in matplotlib</h2>
+<div id="outline-container-orgb5effc0" class="outline-2">
+<h2 id="orgb5effc0"><span class="section-number-2">3.</span> Plotting multi-colored line in matplotlib</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 When plotting the 2D trajectory of diffusing particles or diagnosing drift in microscopy timelapse data, it can be helpful to use color to indicate time. This can be achieved using the <code>matplotlib.collections.LineCollection</code> object. In this example, we'll simulate 2D diffusion and plot the trajectory of a single particle over time.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-python" id="org1b5fd2d"><span style="color: #673AB7;">from</span> matplotlib.collections <span style="color: #673AB7;">import</span> LineCollection
+<pre class="src src-python" id="org9bf2fa9"><span style="color: #673AB7;">from</span> matplotlib.collections <span style="color: #673AB7;">import</span> LineCollection
 <span style="color: #673AB7;">from</span> matplotlib.colors <span style="color: #673AB7;">import</span> Normalize
 <span style="color: #673AB7;">import</span> matplotlib.pyplot <span style="color: #673AB7;">as</span> plt
 <span style="color: #673AB7;">import</span> numpy <span style="color: #673AB7;">as</span> np
@@ -321,7 +331,7 @@ plt.close(fig)
 </div>
 
 
-<div id="org67a257d" class="figure">
+<div id="org2f70915" class="figure">
 <p><img src="./images/simulated_diffusion.png" alt="simulated_diffusion.png" />
 </p>
 </div>
@@ -330,7 +340,7 @@ plt.close(fig)
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Daniel Elnatan</p>
-<p class="date">Created: 2023-03-26 Sun 10:38</p>
+<p class="date">Created: 2023-03-26 Sun 10:47</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
