@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-04-09 Sun 16:03 -->
+<!-- 2023-04-09 Sun 16:14 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Daniel's blog on data visualization, image processing, etc.</title>
@@ -202,11 +202,11 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org9bfc9bf">1. Resolution of an objective lens</a></li>
-<li><a href="#orgfcd4f1a">2. Taking a radial profile with from an arbitrary center</a></li>
-<li><a href="#org0017bdb">3. Making a multi-channel composite image with custom colormap.</a></li>
-<li><a href="#org78e4be5">4. Emulating an <code>argmax()</code> function</a></li>
-<li><a href="#org34b000c">5. Plotting multi-colored line in matplotlib</a></li>
+<li><a href="#org8d971bc">1. Resolution of an objective lens</a></li>
+<li><a href="#org3cb8222">2. Taking a radial profile with from an arbitrary center</a></li>
+<li><a href="#orgca28d82">3. Making a multi-channel composite image with custom colormap.</a></li>
+<li><a href="#org6f06b1e">4. Emulating an <code>argmax()</code> function</a></li>
+<li><a href="#org41221e6">5. Plotting multi-colored line in matplotlib</a></li>
 </ul>
 </div>
 </div>
@@ -218,8 +218,8 @@ With the help of ChatGPT, finding information has become easier, resulting in a 
 The stylesheet for this document is taken from Nicolas Rougier's <a href="https://github.com/rougier/notebook-mode">https://github.com/rougier/notebook-mode</a>. I'm using his <code>nano-theme</code> for my Emacs.
 </p>
 
-<div id="outline-container-org9bfc9bf" class="outline-2">
-<h2 id="org9bfc9bf"><span class="section-number-2">1.</span> Resolution of an objective lens</h2>
+<div id="outline-container-org8d971bc" class="outline-2">
+<h2 id="org8d971bc"><span class="section-number-2">1.</span> Resolution of an objective lens</h2>
 <div class="outline-text-2" id="text-1">
 <p>
 I was going through the excellent review article by Fazel et al. 2023 (<a href="https://arxiv.org/abs/2304.01456">https://arxiv.org/abs/2304.01456</a>) and something clicked when I looked at Figure 2. I never really understood why higher NA objective lenses are actually needed to resolve smaller separation between points sources. I've been taking the fact that higher NA ∝ higher resolution for granted!
@@ -288,7 +288,7 @@ anim.save(<span style="color: #90A4AE;">"point_separation_interference.mp4"</spa
 </pre>
 </div>
 
-<video width="700"  controls loop>  <source src="./images/point_separation_interference.mp4" type="video/mp4">Your browser does not support the video tag.</video>
+<video width="700"  controls loop> <source src="./images/point_separation_interference.mp4" type="video/mp4">Your browser does not support the video tag.</video>
 
 <p>
 The closer each points become, the larger the angles between of the destructive interference fringes. We need these fringes to actually resolve the points sources. When the separation becomes very close (smaller than the wavelength), you can see that the destructive interference "goes away" and the point source behave like a single points source. I didn't appreciate the fact that when points are far apart (much larger than the wavelength), these destructive interference fringes form even along y-coordinates between the points.. I guess I should think more about waves&#x2026;
@@ -296,8 +296,8 @@ The closer each points become, the larger the angles between of the destructive 
 </div>
 </div>
 
-<div id="outline-container-orgfcd4f1a" class="outline-2">
-<h2 id="orgfcd4f1a"><span class="section-number-2">2.</span> Taking a radial profile with from an arbitrary center</h2>
+<div id="outline-container-org3cb8222" class="outline-2">
+<h2 id="org3cb8222"><span class="section-number-2">2.</span> Taking a radial profile with from an arbitrary center</h2>
 <div class="outline-text-2" id="text-2">
 <p>
 It turns out you can use <code>scipy.ndimage.mean</code> to take a radial average of an n-dimensional image. To take the radial average from an arbitrary center you can just use <code>scipy.ndimage.distance_transform_edt</code> to compute the radial coordinates.
@@ -308,7 +308,7 @@ For this example, we'll create a cosine in 2D.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-python" id="orgfcb1927"><span style="color: #673AB7;">import</span> numpy <span style="color: #673AB7;">as</span> np
+<pre class="src src-python" id="org3597f03"><span style="color: #673AB7;">import</span> numpy <span style="color: #673AB7;">as</span> np
 <span style="color: #673AB7;">import</span> scipy.ndimage <span style="color: #673AB7;">as</span> ndi
 <span style="color: #673AB7;">import</span> matplotlib.pyplot <span style="color: #673AB7;">as</span> plt
 
@@ -349,6 +349,11 @@ plt.close(fig)
 <p>
 <a href=""></a>
 </p>
+
+<div id="org46044fc" class="figure">
+<p><img src="./images/radial_profile.png" alt="radial_profile.png" />
+</p>
+</div>
 
 <p>
 This can be useful when trying to compute radial average of a power spectrum
@@ -393,11 +398,16 @@ plt.savefig(<span style="color: #90A4AE;">"./images/power_spectrum.png"</span>)
 <p>
 <a href=""></a>
 </p>
+
+<div id="orgcce805f" class="figure">
+<p><img src="./images/power_spectrum.png" alt="power spectrum" />
+</p>
+</div>
 </div>
 </div>
 
-<div id="outline-container-org0017bdb" class="outline-2">
-<h2 id="org0017bdb"><span class="section-number-2">3.</span> Making a multi-channel composite image with custom colormap.</h2>
+<div id="outline-container-orgca28d82" class="outline-2">
+<h2 id="orgca28d82"><span class="section-number-2">3.</span> Making a multi-channel composite image with custom colormap.</h2>
 <div class="outline-text-2" id="text-3">
 <p>
 With a bonus of animating through the Z-slices. The link to the notebook is <a href="https://github.com/delnatan/delnatan.github.io/blob/master/jupyter_notebooks/make_movies_from_timelapse.ipynb">here</a> (via github).
@@ -417,8 +427,8 @@ The tricks used here is a subject for future posts:
 </div>
 </div>
 
-<div id="outline-container-org78e4be5" class="outline-2">
-<h2 id="org78e4be5"><span class="section-number-2">4.</span> Emulating an <code>argmax()</code> function</h2>
+<div id="outline-container-org6f06b1e" class="outline-2">
+<h2 id="org6f06b1e"><span class="section-number-2">4.</span> Emulating an <code>argmax()</code> function</h2>
 <div class="outline-text-2" id="text-4">
 <p>
 You can emulate <code>argmax()</code> function (returns the index of the maximum value in a sequence) in Python by doing:
@@ -441,15 +451,15 @@ This returns the argmax and the max value from a list. I occasionally use this w
 </div>
 </div>
 
-<div id="outline-container-org34b000c" class="outline-2">
-<h2 id="org34b000c"><span class="section-number-2">5.</span> Plotting multi-colored line in matplotlib</h2>
+<div id="outline-container-org41221e6" class="outline-2">
+<h2 id="org41221e6"><span class="section-number-2">5.</span> Plotting multi-colored line in matplotlib</h2>
 <div class="outline-text-2" id="text-5">
 <p>
 When plotting the 2D trajectory of diffusing particles or diagnosing drift in microscopy timelapse data, it can be helpful to use color to indicate time. This can be achieved using the <code>matplotlib.collections.LineCollection</code> object. In this example, we'll simulate 2D diffusion and plot the trajectory of a single particle over time.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-python" id="org2ab22f6"><span style="color: #673AB7;">from</span> matplotlib.collections <span style="color: #673AB7;">import</span> LineCollection
+<pre class="src src-python" id="orgacc7f68"><span style="color: #673AB7;">from</span> matplotlib.collections <span style="color: #673AB7;">import</span> LineCollection
 <span style="color: #673AB7;">from</span> matplotlib.colors <span style="color: #673AB7;">import</span> Normalize
 <span style="color: #673AB7;">import</span> matplotlib.pyplot <span style="color: #673AB7;">as</span> plt
 <span style="color: #673AB7;">import</span> numpy <span style="color: #673AB7;">as</span> np
@@ -513,12 +523,17 @@ plt.close(fig)
 <p>
 <a href=""></a>
 </p>
+
+<div id="org019b386" class="figure">
+<p><img src="./images/simulated_diffusion.png" alt="simulated_diffusion.png" width="150" />
+</p>
+</div>
 </div>
 </div>
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Daniel Elnatan</p>
-<p class="date">Created: 2023-04-09 Sun 16:03</p>
+<p class="date">Created: 2023-04-09 Sun 16:14</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
