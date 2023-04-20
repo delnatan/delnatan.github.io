@@ -3,7 +3,7 @@
 "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
 <head>
-<!-- 2023-04-09 Sun 16:14 -->
+<!-- 2023-04-20 Thu 12:10 -->
 <meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <title>Daniel's blog on data visualization, image processing, etc.</title>
@@ -202,11 +202,12 @@
 <h2>Table of Contents</h2>
 <div id="text-table-of-contents" role="doc-toc">
 <ul>
-<li><a href="#org8d971bc">1. Resolution of an objective lens</a></li>
-<li><a href="#org3cb8222">2. Taking a radial profile with from an arbitrary center</a></li>
-<li><a href="#orgca28d82">3. Making a multi-channel composite image with custom colormap.</a></li>
-<li><a href="#org6f06b1e">4. Emulating an <code>argmax()</code> function</a></li>
-<li><a href="#org41221e6">5. Plotting multi-colored line in matplotlib</a></li>
+<li><a href="#org6f5578d">1. Plotting alphafold <code>pLDDT</code> colors on with line segments</a></li>
+<li><a href="#orgf6ccc2a">2. Resolution of an objective lens</a></li>
+<li><a href="#org9d590f1">3. Taking a radial profile from an arbitrary center</a></li>
+<li><a href="#orgf89e580">4. Making a multi-channel composite image with custom colormap.</a></li>
+<li><a href="#org33a55c2">5. Emulating an <code>argmax()</code> function</a></li>
+<li><a href="#orgad12338">6. Plotting multi-colored line in matplotlib</a></li>
 </ul>
 </div>
 </div>
@@ -218,9 +219,97 @@ With the help of ChatGPT, finding information has become easier, resulting in a 
 The stylesheet for this document is taken from Nicolas Rougier's <a href="https://github.com/rougier/notebook-mode">https://github.com/rougier/notebook-mode</a>. I'm using his <code>nano-theme</code> for my Emacs.
 </p>
 
-<div id="outline-container-org8d971bc" class="outline-2">
-<h2 id="org8d971bc"><span class="section-number-2">1.</span> Resolution of an objective lens</h2>
+<div id="outline-container-org6f5578d" class="outline-2">
+<h2 id="org6f5578d"><span class="section-number-2">1.</span> Plotting alphafold <code>pLDDT</code> colors on with line segments</h2>
 <div class="outline-text-2" id="text-1">
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #673AB7;">import</span> matplotlib.cm <span style="color: #673AB7;">as</span> cm
+<span style="color: #673AB7;">import</span> matplotlib.colors <span style="color: #673AB7;">as</span> mcolors
+<span style="color: #673AB7;">import</span> matplotlib.pyplot <span style="color: #673AB7;">as</span> plt
+<span style="color: #673AB7;">import</span> numpy <span style="color: #673AB7;">as</span> np
+<span style="color: #673AB7;">import</span> pandas <span style="color: #673AB7;">as</span> pd
+<span style="color: #673AB7;">from</span> matplotlib.collections <span style="color: #673AB7;">import</span> LineCollection
+
+<span style="color: #263238; font-weight: bold;">alphafold_colors</span> = [<span style="color: #90A4AE;">"#ee8453"</span>, <span style="color: #90A4AE;">"#f9dc4d"</span>, <span style="color: #90A4AE;">"#7fc9ef"</span>, <span style="color: #90A4AE;">"#2152ce"</span>]
+<span style="color: #263238; font-weight: bold;">af_cmap</span> = mcolors.LinearSegmentedColormap.from_list(
+    <span style="color: #90A4AE;">"pLDDT colors"</span>, colors=alphafold_colors 
+)
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">for discrete boundaries for colors</span>
+<span style="color: #263238; font-weight: bold;">plddt_bins</span> = [0, 50, 70, 90, 100]
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">map the bins to colors '.N' is the number of colors specified in the colormap above</span>
+<span style="color: #263238; font-weight: bold;">cmap_boundary_norm</span> = mcolors.BoundaryNorm(plddt_bins, af_cmap.N)
+
+<span style="color: #263238; font-weight: bold;">data</span> = pd.read_table(<span style="color: #90A4AE;">"images/plddt_values.txt"</span>)
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">remove whitespace from column headers</span>
+data.<span style="color: #263238; font-weight: bold;">columns</span> = data.columns.<span style="color: #673AB7;">str</span>.strip()
+
+<span style="color: #263238; font-weight: bold;">x</span> = data[<span style="color: #90A4AE;">"resnum"</span>].values
+<span style="color: #263238; font-weight: bold;">y</span> = data[<span style="color: #90A4AE;">"plddt"</span>].values
+<span style="color: #263238; font-weight: bold;">xy</span> = np.column_stack([x, y])
+
+<span style="color: #263238; font-weight: bold;">segments</span> = np.concatenate(
+    [xy[:-1, <span style="color: #673AB7;">None</span>, :], xy[1:, <span style="color: #673AB7;">None</span>, :]], axis=1
+)
+
+<span style="color: #263238; font-weight: bold;">lc</span> = LineCollection(segments, cmap=af_cmap, norm=cmap_boundary_norm, linewidth=2)
+lc.set_array(y)
+
+<span style="color: #263238; font-weight: bold;">fig</span>, <span style="color: #263238; font-weight: bold;">ax</span> = plt.subplots(figsize=(6,3))
+
+ax.add_collection(lc)
+ax.autoscale()
+ax.set_xlabel(<span style="color: #90A4AE;">"residue number"</span>)
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">Remove spines</span>
+ax.spines[<span style="color: #90A4AE;">'left'</span>].set_visible(<span style="color: #673AB7;">False</span>)
+ax.spines[<span style="color: #90A4AE;">'right'</span>].set_visible(<span style="color: #673AB7;">False</span>)
+ax.spines[<span style="color: #90A4AE;">'top'</span>].set_visible(<span style="color: #673AB7;">False</span>)
+ax.yaxis.set_visible(<span style="color: #673AB7;">False</span>)
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">add colorbar</span>
+fig.colorbar(
+    cm.ScalarMappable(cmap=af_cmap, norm=cmap_boundary_norm),
+    label=<span style="color: #90A4AE;">"pLDDT score"</span>,
+    ax=ax
+)
+
+fig.tight_layout()
+fig.savefig(<span style="color: #90A4AE;">"images/plddt_plot.png"</span>)
+
+<span style="color: #673AB7;">return</span> <span style="color: #90A4AE;">"./images/plddt_plot.png"</span>
+
+</pre>
+</div>
+
+
+<div id="org3ce2249" class="figure">
+<p><img src="./images/plddt_plot.png" alt="plddt_plot.png" />
+</p>
+</div>
+
+<p>
+The scatterplot is much easier:
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #263238; font-weight: bold;">fig</span>, <span style="color: #263238; font-weight: bold;">ax</span> = plt.subplots(figsize=(6,3))
+ax.scatter(x,y,c=y,cmap=af_cmap, norm=cmap_norm, s=5)
+ax.set_ylabel(<span style="color: #90A4AE;">"pLDDT score"</span>)
+ax.set_xlabel(<span style="color: #90A4AE;">"residue number"</span>)
+</pre>
+</div>
+<img src="./images/plddt_scatter.png"></img>
+
+
+<p>
+Alternatively you can just use <code>plt.scatter</code> to plot the same information with the same colorbar
+</p>
+</div>
+</div>
+
+<div id="outline-container-orgf6ccc2a" class="outline-2">
+<h2 id="orgf6ccc2a"><span class="section-number-2">2.</span> Resolution of an objective lens</h2>
+<div class="outline-text-2" id="text-2">
 <p>
 I was going through the excellent review article by Fazel et al. 2023 (<a href="https://arxiv.org/abs/2304.01456">https://arxiv.org/abs/2304.01456</a>) and something clicked when I looked at Figure 2. I never really understood why higher NA objective lenses are actually needed to resolve smaller separation between points sources. I've been taking the fact that higher NA ∝ higher resolution for granted!
 </p>
@@ -296,9 +385,9 @@ The closer each points become, the larger the angles between of the destructive 
 </div>
 </div>
 
-<div id="outline-container-org3cb8222" class="outline-2">
-<h2 id="org3cb8222"><span class="section-number-2">2.</span> Taking a radial profile with from an arbitrary center</h2>
-<div class="outline-text-2" id="text-2">
+<div id="outline-container-org9d590f1" class="outline-2">
+<h2 id="org9d590f1"><span class="section-number-2">3.</span> Taking a radial profile from an arbitrary center</h2>
+<div class="outline-text-2" id="text-3">
 <p>
 It turns out you can use <code>scipy.ndimage.mean</code> to take a radial average of an n-dimensional image. To take the radial average from an arbitrary center you can just use <code>scipy.ndimage.distance_transform_edt</code> to compute the radial coordinates.
 </p>
@@ -308,7 +397,7 @@ For this example, we'll create a cosine in 2D.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-python" id="org3597f03"><span style="color: #673AB7;">import</span> numpy <span style="color: #673AB7;">as</span> np
+<pre class="src src-python" id="org1b547c3"><span style="color: #673AB7;">import</span> numpy <span style="color: #673AB7;">as</span> np
 <span style="color: #673AB7;">import</span> scipy.ndimage <span style="color: #673AB7;">as</span> ndi
 <span style="color: #673AB7;">import</span> matplotlib.pyplot <span style="color: #673AB7;">as</span> plt
 
@@ -346,11 +435,8 @@ plt.close(fig)
 </pre>
 </div>
 
-<p>
-<a href=""></a>
-</p>
 
-<div id="org46044fc" class="figure">
+<div id="org5e51e9e" class="figure">
 <p><img src="./images/radial_profile.png" alt="radial_profile.png" />
 </p>
 </div>
@@ -395,20 +481,17 @@ plt.savefig(<span style="color: #90A4AE;">"./images/power_spectrum.png"</span>)
 </pre>
 </div>
 
-<p>
-<a href=""></a>
-</p>
 
-<div id="orgcce805f" class="figure">
-<p><img src="./images/power_spectrum.png" alt="power spectrum" />
+<div id="org271cab2" class="figure">
+<p><img src="./images/power_spectrum.png" alt="power_spectrum.png" />
 </p>
 </div>
 </div>
 </div>
 
-<div id="outline-container-orgca28d82" class="outline-2">
-<h2 id="orgca28d82"><span class="section-number-2">3.</span> Making a multi-channel composite image with custom colormap.</h2>
-<div class="outline-text-2" id="text-3">
+<div id="outline-container-orgf89e580" class="outline-2">
+<h2 id="orgf89e580"><span class="section-number-2">4.</span> Making a multi-channel composite image with custom colormap.</h2>
+<div class="outline-text-2" id="text-4">
 <p>
 With a bonus of animating through the Z-slices. The link to the notebook is <a href="https://github.com/delnatan/delnatan.github.io/blob/master/jupyter_notebooks/make_movies_from_timelapse.ipynb">here</a> (via github).
 </p>
@@ -427,9 +510,9 @@ The tricks used here is a subject for future posts:
 </div>
 </div>
 
-<div id="outline-container-org6f06b1e" class="outline-2">
-<h2 id="org6f06b1e"><span class="section-number-2">4.</span> Emulating an <code>argmax()</code> function</h2>
-<div class="outline-text-2" id="text-4">
+<div id="outline-container-org33a55c2" class="outline-2">
+<h2 id="org33a55c2"><span class="section-number-2">5.</span> Emulating an <code>argmax()</code> function</h2>
+<div class="outline-text-2" id="text-5">
 <p>
 You can emulate <code>argmax()</code> function (returns the index of the maximum value in a sequence) in Python by doing:
 </p>
@@ -451,15 +534,15 @@ This returns the argmax and the max value from a list. I occasionally use this w
 </div>
 </div>
 
-<div id="outline-container-org41221e6" class="outline-2">
-<h2 id="org41221e6"><span class="section-number-2">5.</span> Plotting multi-colored line in matplotlib</h2>
-<div class="outline-text-2" id="text-5">
+<div id="outline-container-orgad12338" class="outline-2">
+<h2 id="orgad12338"><span class="section-number-2">6.</span> Plotting multi-colored line in matplotlib</h2>
+<div class="outline-text-2" id="text-6">
 <p>
 When plotting the 2D trajectory of diffusing particles or diagnosing drift in microscopy timelapse data, it can be helpful to use color to indicate time. This can be achieved using the <code>matplotlib.collections.LineCollection</code> object. In this example, we'll simulate 2D diffusion and plot the trajectory of a single particle over time.
 </p>
 
 <div class="org-src-container">
-<pre class="src src-python" id="orgacc7f68"><span style="color: #673AB7;">from</span> matplotlib.collections <span style="color: #673AB7;">import</span> LineCollection
+<pre class="src src-python" id="orgbb1ebab"><span style="color: #673AB7;">from</span> matplotlib.collections <span style="color: #673AB7;">import</span> LineCollection
 <span style="color: #673AB7;">from</span> matplotlib.colors <span style="color: #673AB7;">import</span> Normalize
 <span style="color: #673AB7;">import</span> matplotlib.pyplot <span style="color: #673AB7;">as</span> plt
 <span style="color: #673AB7;">import</span> numpy <span style="color: #673AB7;">as</span> np
@@ -520,12 +603,9 @@ plt.close(fig)
 </pre>
 </div>
 
-<p>
-<a href=""></a>
-</p>
 
-<div id="org019b386" class="figure">
-<p><img src="./images/simulated_diffusion.png" alt="simulated_diffusion.png" width="150" />
+<div id="orga95ca1f" class="figure">
+<p><img src="./images/simulated_diffusion.png" alt="simulated_diffusion.png" />
 </p>
 </div>
 </div>
@@ -533,7 +613,7 @@ plt.close(fig)
 </div>
 <div id="postamble" class="status">
 <p class="author">Author: Daniel Elnatan</p>
-<p class="date">Created: 2023-04-09 Sun 16:14</p>
+<p class="date">Created: 2023-04-20 Thu 12:10</p>
 <p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
 </div>
 </body>
