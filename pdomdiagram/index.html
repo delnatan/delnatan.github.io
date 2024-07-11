@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Protein Sequence Diagram</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://d3js.org/d3.v7.min.js"></script>
+</head>
+<body class="bg-gray-100 p-8">
+    <div class="max-w-4xl mx-auto bg-white p-6 rounded-lg shadow-md">
+        <h1 class="text-2xl font-bold mb-4">Protein Sequence Diagram</h1>
+      <textarea id="sequenceInput" class="w-full p-2 border rounded mb-4" rows="4" placeholder="Enter amino acid sequence...">
+MAMMVFPREEKLSQDEIVLGTKAVIQGLETLRGEHRALLAPLVAPEAGEAEPGSQERCILLRRSLEAIELGLGEAQVILALSSHLGAVESEKQKLRAQVRRLVQENQWLREELAGTQQKLQRSEQAVAQLEEEKQHLLFMSQIRKLDEDASPNEEKGDVPKDTLDDLFPNEDEQSPAPSPGGGDVSGQHGGYEIPARLRTLHNLVIQYASQGRYEVAVPLCKQALEDLEKTSGHDHPDVATMLNILALVYRDQNKYKEAAHLLNDALAIREKTLGKDHPAVAATLNNLAVLYGKRGKYKEAEPLCKRALEIREKVLGKFHPDVAKQLSNLALLCQNQGKAEEVEYYYRRALEIYATRLGPDDPNVAKTKNNLASCYLKQGKYQDAETLYKEILTRAHEKEFGSVNGDNKPIWMHAEEREESKDKRRDSAPYGEYGSWYKACKVDSPTVNTTLRSLGALYRRQGKLEAAHTLEDCASRNRKQGLDPASQTKVVELLKDGSGRRGDRRSSRDMAGGAGPRSESDLEDVGPTAEWNGDGSGSLRRSGSFGKLRDALRRSSEMLVKKLQGGTPQEPPNPRMKRASSLNFLNKSVEEPTQPGGTGLSDSRTLSSSSMDLSRRSSLVG
+	</textarea>
+      <textarea id="domainInput" class="w-full p-2 border rounded mb-4" rows="4" placeholder="Enter domain annotations (name,start,end,color)...">
+TPR1,198,231
+TPR2,240,273
+TPR3,282,315
+TPR4,324,357
+TPR5,366,399
+TPR6,449,482
+disordered,476,548,,line</textarea>
+        <button id="drawButton" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600 mr-2">Draw Diagram</button>
+        <button id="saveButton" class="bg-green-500 text-white px-4 py-2 rounded hover:bg-green-600" style="display: none;">Save SVG</button>
+        <div id="diagramSvg" class="mt-4"></div>
+    </div>
+    <script src="proteinDiagram.js"></script>
+</body>
+</html>

@@ -1,0 +1,648 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+"http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" lang="en" xml:lang="en">
+<head>
+<!-- 2023-04-20 Thu 15:44 -->
+<meta http-equiv="Content-Type" content="text/html;charset=utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Daniel's blog on data visualization, image processing, etc.</title>
+<meta name="author" content="Daniel Elnatan" />
+<meta name="generator" content="Org Mode" />
+<style>
+  #content { max-width: 60em; margin: auto; }
+  .title  { text-align: center;
+             margin-bottom: .2em; }
+  .subtitle { text-align: center;
+              font-size: medium;
+              font-weight: bold;
+              margin-top:0; }
+  .todo   { font-family: monospace; color: red; }
+  .done   { font-family: monospace; color: green; }
+  .priority { font-family: monospace; color: orange; }
+  .tag    { background-color: #eee; font-family: monospace;
+            padding: 2px; font-size: 80%; font-weight: normal; }
+  .timestamp { color: #bebebe; }
+  .timestamp-kwd { color: #5f9ea0; }
+  .org-right  { margin-left: auto; margin-right: 0px;  text-align: right; }
+  .org-left   { margin-left: 0px;  margin-right: auto; text-align: left; }
+  .org-center { margin-left: auto; margin-right: auto; text-align: center; }
+  .underline { text-decoration: underline; }
+  #postamble p, #preamble p { font-size: 90%; margin: .2em; }
+  p.verse { margin-left: 3%; }
+  pre {
+    border: 1px solid #e6e6e6;
+    border-radius: 3px;
+    background-color: #f2f2f2;
+    padding: 8pt;
+    font-family: monospace;
+    overflow: auto;
+    margin: 1.2em;
+  }
+  pre.src {
+    position: relative;
+    overflow: auto;
+  }
+  pre.src:before {
+    display: none;
+    position: absolute;
+    top: -8px;
+    right: 12px;
+    padding: 3px;
+    color: #555;
+    background-color: #f2f2f299;
+  }
+  pre.src:hover:before { display: inline; margin-top: 14px;}
+  /* Languages per Org manual */
+  pre.src-asymptote:before { content: 'Asymptote'; }
+  pre.src-awk:before { content: 'Awk'; }
+  pre.src-authinfo::before { content: 'Authinfo'; }
+  pre.src-C:before { content: 'C'; }
+  /* pre.src-C++ doesn't work in CSS */
+  pre.src-clojure:before { content: 'Clojure'; }
+  pre.src-css:before { content: 'CSS'; }
+  pre.src-D:before { content: 'D'; }
+  pre.src-ditaa:before { content: 'ditaa'; }
+  pre.src-dot:before { content: 'Graphviz'; }
+  pre.src-calc:before { content: 'Emacs Calc'; }
+  pre.src-emacs-lisp:before { content: 'Emacs Lisp'; }
+  pre.src-fortran:before { content: 'Fortran'; }
+  pre.src-gnuplot:before { content: 'gnuplot'; }
+  pre.src-haskell:before { content: 'Haskell'; }
+  pre.src-hledger:before { content: 'hledger'; }
+  pre.src-java:before { content: 'Java'; }
+  pre.src-js:before { content: 'Javascript'; }
+  pre.src-latex:before { content: 'LaTeX'; }
+  pre.src-ledger:before { content: 'Ledger'; }
+  pre.src-lisp:before { content: 'Lisp'; }
+  pre.src-lilypond:before { content: 'Lilypond'; }
+  pre.src-lua:before { content: 'Lua'; }
+  pre.src-matlab:before { content: 'MATLAB'; }
+  pre.src-mscgen:before { content: 'Mscgen'; }
+  pre.src-ocaml:before { content: 'Objective Caml'; }
+  pre.src-octave:before { content: 'Octave'; }
+  pre.src-org:before { content: 'Org mode'; }
+  pre.src-oz:before { content: 'OZ'; }
+  pre.src-plantuml:before { content: 'Plantuml'; }
+  pre.src-processing:before { content: 'Processing.js'; }
+  pre.src-python:before { content: 'Python'; }
+  pre.src-R:before { content: 'R'; }
+  pre.src-ruby:before { content: 'Ruby'; }
+  pre.src-sass:before { content: 'Sass'; }
+  pre.src-scheme:before { content: 'Scheme'; }
+  pre.src-screen:before { content: 'Gnu Screen'; }
+  pre.src-sed:before { content: 'Sed'; }
+  pre.src-sh:before { content: 'shell'; }
+  pre.src-sql:before { content: 'SQL'; }
+  pre.src-sqlite:before { content: 'SQLite'; }
+  /* additional languages in org.el's org-babel-load-languages alist */
+  pre.src-forth:before { content: 'Forth'; }
+  pre.src-io:before { content: 'IO'; }
+  pre.src-J:before { content: 'J'; }
+  pre.src-makefile:before { content: 'Makefile'; }
+  pre.src-maxima:before { content: 'Maxima'; }
+  pre.src-perl:before { content: 'Perl'; }
+  pre.src-picolisp:before { content: 'Pico Lisp'; }
+  pre.src-scala:before { content: 'Scala'; }
+  pre.src-shell:before { content: 'Shell Script'; }
+  pre.src-ebnf2ps:before { content: 'ebfn2ps'; }
+  /* additional language identifiers per "defun org-babel-execute"
+       in ob-*.el */
+  pre.src-cpp:before  { content: 'C++'; }
+  pre.src-abc:before  { content: 'ABC'; }
+  pre.src-coq:before  { content: 'Coq'; }
+  pre.src-groovy:before  { content: 'Groovy'; }
+  /* additional language identifiers from org-babel-shell-names in
+     ob-shell.el: ob-shell is the only babel language using a lambda to put
+     the execution function name together. */
+  pre.src-bash:before  { content: 'bash'; }
+  pre.src-csh:before  { content: 'csh'; }
+  pre.src-ash:before  { content: 'ash'; }
+  pre.src-dash:before  { content: 'dash'; }
+  pre.src-ksh:before  { content: 'ksh'; }
+  pre.src-mksh:before  { content: 'mksh'; }
+  pre.src-posh:before  { content: 'posh'; }
+  /* Additional Emacs modes also supported by the LaTeX listings package */
+  pre.src-ada:before { content: 'Ada'; }
+  pre.src-asm:before { content: 'Assembler'; }
+  pre.src-caml:before { content: 'Caml'; }
+  pre.src-delphi:before { content: 'Delphi'; }
+  pre.src-html:before { content: 'HTML'; }
+  pre.src-idl:before { content: 'IDL'; }
+  pre.src-mercury:before { content: 'Mercury'; }
+  pre.src-metapost:before { content: 'MetaPost'; }
+  pre.src-modula-2:before { content: 'Modula-2'; }
+  pre.src-pascal:before { content: 'Pascal'; }
+  pre.src-ps:before { content: 'PostScript'; }
+  pre.src-prolog:before { content: 'Prolog'; }
+  pre.src-simula:before { content: 'Simula'; }
+  pre.src-tcl:before { content: 'tcl'; }
+  pre.src-tex:before { content: 'TeX'; }
+  pre.src-plain-tex:before { content: 'Plain TeX'; }
+  pre.src-verilog:before { content: 'Verilog'; }
+  pre.src-vhdl:before { content: 'VHDL'; }
+  pre.src-xml:before { content: 'XML'; }
+  pre.src-nxml:before { content: 'XML'; }
+  /* add a generic configuration mode; LaTeX export needs an additional
+     (add-to-list 'org-latex-listings-langs '(conf " ")) in .emacs */
+  pre.src-conf:before { content: 'Configuration File'; }
+
+  table { border-collapse:collapse; }
+  caption.t-above { caption-side: top; }
+  caption.t-bottom { caption-side: bottom; }
+  td, th { vertical-align:top;  }
+  th.org-right  { text-align: center;  }
+  th.org-left   { text-align: center;   }
+  th.org-center { text-align: center; }
+  td.org-right  { text-align: right;  }
+  td.org-left   { text-align: left;   }
+  td.org-center { text-align: center; }
+  dt { font-weight: bold; }
+  .footpara { display: inline; }
+  .footdef  { margin-bottom: 1em; }
+  .figure { padding: 1em; }
+  .figure p { text-align: center; }
+  .equation-container {
+    display: table;
+    text-align: center;
+    width: 100%;
+  }
+  .equation {
+    vertical-align: middle;
+  }
+  .equation-label {
+    display: table-cell;
+    text-align: right;
+    vertical-align: middle;
+  }
+  .inlinetask {
+    padding: 10px;
+    border: 2px solid gray;
+    margin: 10px;
+    background: #ffffcc;
+  }
+  #org-div-home-and-up
+   { text-align: right; font-size: 70%; white-space: nowrap; }
+  textarea { overflow-x: auto; }
+  .linenr { font-size: smaller }
+  .code-highlighted { background-color: #ffff00; }
+  .org-info-js_info-navigation { border-style: none; }
+  #org-info-js_console-label
+    { font-size: 10px; font-weight: bold; white-space: nowrap; }
+  .org-info-js_search-highlight
+    { background-color: #ffff00; color: #000000; font-weight: bold; }
+  .org-svg { }
+</style>
+<link rel="stylesheet" type="text/css" href="notebook.css" />
+</head>
+<body>
+<div id="content" class="content">
+<h1 class="title">Daniel's blog on data visualization, image processing, etc.</h1>
+<div id="table-of-contents" role="doc-toc">
+<h2>Table of Contents</h2>
+<div id="text-table-of-contents" role="doc-toc">
+<ul>
+<li><a href="#org607012b">1. Plotting alphafold <code>pLDDT</code> colors on with line segments</a></li>
+<li><a href="#orgb2e6b90">2. Resolution of an objective lens</a></li>
+<li><a href="#org05c286e">3. Taking a radial profile from an arbitrary center</a></li>
+<li><a href="#orga4c424c">4. Making a multi-channel composite image with custom colormap.</a></li>
+<li><a href="#org3920998">5. Emulating an <code>argmax()</code> function</a></li>
+<li><a href="#org4c7a8d3">6. Plotting multi-colored line in matplotlib</a></li>
+</ul>
+</div>
+</div>
+<p>
+With the help of ChatGPT, finding information has become easier, resulting in a wealth of tips and tricks that can be difficult to manage. I primarily use Python, focusing on data visualization and image analysis, and plan to regularly update this blog with useful information for others. Additionally, this blog serves as an opportunity for me to practice using Emacs org-mode for writing and organizing what I learn in one place.
+</p>
+
+<p>
+The stylesheet for this document is taken from Nicolas Rougier's <a href="https://github.com/rougier/notebook-mode">https://github.com/rougier/notebook-mode</a>. I'm using his <code>nano-theme</code> for my Emacs.
+</p>
+
+<div id="outline-container-org607012b" class="outline-2">
+<h2 id="org607012b"><span class="section-number-2">1.</span> Plotting alphafold <code>pLDDT</code> colors on with line segments</h2>
+<div class="outline-text-2" id="text-1">
+<p>
+You can extract the pLDDT (B-factor column) values from an alphafold PDB file using this awk script:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-awk"><span style="color: #90A4AE;">#</span><span style="color: #90A4AE;">!/usr/bin/awk -f</span>
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">pipe the output of this script with `sort -k1 -n` to sort by residue number</span>
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">For each record that starts with 'ATOM'</span>
+<span style="color: #90A4AE;">/^ATOM/</span> {
+    <span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">get the residue id field</span>
+    resid = <span style="color: #673AB7;">substr</span>($0, 23, 4)
+    <span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">residue name field</span>
+    resname[resid] = <span style="color: #673AB7;">substr</span>($0, 18, 3)
+    bfac = <span style="color: #673AB7;">substr</span>($0, 61, 6) + 0
+    <span style="color: #673AB7;">if</span> (bfac == bfac) {
+        sum[resid] += bfac
+        count[resid] += 1
+    }
+}
+<span style="color: #673AB7;">END</span> {
+    <span style="color: #673AB7;">for</span> (resid <span style="color: #673AB7;">in</span> sum) {
+        <span style="color: #673AB7;">print</span> resid, resname[resid], sum[resid] / count[resid]
+    }
+}
+
+</pre>
+</div>
+
+
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #673AB7;">import</span> matplotlib.cm <span style="color: #673AB7;">as</span> cm
+<span style="color: #673AB7;">import</span> matplotlib.colors <span style="color: #673AB7;">as</span> mcolors
+<span style="color: #673AB7;">import</span> matplotlib.pyplot <span style="color: #673AB7;">as</span> plt
+<span style="color: #673AB7;">import</span> numpy <span style="color: #673AB7;">as</span> np
+<span style="color: #673AB7;">import</span> pandas <span style="color: #673AB7;">as</span> pd
+<span style="color: #673AB7;">from</span> matplotlib.collections <span style="color: #673AB7;">import</span> LineCollection
+
+<span style="color: #263238; font-weight: bold;">alphafold_colors</span> = [<span style="color: #90A4AE;">"#ee8453"</span>, <span style="color: #90A4AE;">"#f9dc4d"</span>, <span style="color: #90A4AE;">"#7fc9ef"</span>, <span style="color: #90A4AE;">"#2152ce"</span>]
+<span style="color: #263238; font-weight: bold;">af_cmap</span> = mcolors.LinearSegmentedColormap.from_list(
+    <span style="color: #90A4AE;">"pLDDT colors"</span>, colors=alphafold_colors 
+)
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">for discrete boundaries for colors</span>
+<span style="color: #263238; font-weight: bold;">plddt_bins</span> = [0, 50, 70, 90, 100]
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">map the bins to colors '.N' is the number of colors specified in the colormap above</span>
+<span style="color: #263238; font-weight: bold;">cmap_boundary_norm</span> = mcolors.BoundaryNorm(plddt_bins, af_cmap.N)
+
+<span style="color: #263238; font-weight: bold;">data</span> = pd.read_table(<span style="color: #90A4AE;">"images/plddt_values.txt"</span>)
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">remove whitespace from column headers</span>
+data.<span style="color: #263238; font-weight: bold;">columns</span> = data.columns.<span style="color: #673AB7;">str</span>.strip()
+
+<span style="color: #263238; font-weight: bold;">x</span> = data[<span style="color: #90A4AE;">"resnum"</span>].values
+<span style="color: #263238; font-weight: bold;">y</span> = data[<span style="color: #90A4AE;">"plddt"</span>].values
+<span style="color: #263238; font-weight: bold;">xy</span> = np.column_stack([x, y])
+
+<span style="color: #263238; font-weight: bold;">segments</span> = np.concatenate(
+    [xy[:-1, <span style="color: #673AB7;">None</span>, :], xy[1:, <span style="color: #673AB7;">None</span>, :]], axis=1
+)
+
+<span style="color: #263238; font-weight: bold;">lc</span> = LineCollection(segments, cmap=af_cmap, norm=cmap_boundary_norm, linewidth=2)
+lc.set_array(y)
+
+<span style="color: #263238; font-weight: bold;">fig</span>, <span style="color: #263238; font-weight: bold;">ax</span> = plt.subplots(figsize=(6,3))
+
+ax.add_collection(lc)
+ax.autoscale()
+ax.set_xlabel(<span style="color: #90A4AE;">"residue number"</span>)
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">Remove spines</span>
+ax.spines[<span style="color: #90A4AE;">'left'</span>].set_visible(<span style="color: #673AB7;">False</span>)
+ax.spines[<span style="color: #90A4AE;">'right'</span>].set_visible(<span style="color: #673AB7;">False</span>)
+ax.spines[<span style="color: #90A4AE;">'top'</span>].set_visible(<span style="color: #673AB7;">False</span>)
+ax.yaxis.set_visible(<span style="color: #673AB7;">False</span>)
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">add colorbar</span>
+fig.colorbar(
+    cm.ScalarMappable(cmap=af_cmap, norm=cmap_boundary_norm),
+    label=<span style="color: #90A4AE;">"pLDDT score"</span>,
+    ax=ax
+)
+
+fig.tight_layout()
+fig.savefig(<span style="color: #90A4AE;">"images/plddt_plot.png"</span>)
+
+<span style="color: #673AB7;">return</span> <span style="color: #90A4AE;">"./images/plddt_plot.png"</span>
+
+</pre>
+</div>
+
+
+<div id="org983f192" class="figure">
+<p><img src="./images/plddt_plot.png" alt="plddt_plot.png" />
+</p>
+</div>
+
+<p>
+Alternatively you can just use <code>plt.scatter</code> to plot the same information with the same colorbar. The scatterplot is much easier:
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #263238; font-weight: bold;">fig</span>, <span style="color: #263238; font-weight: bold;">ax</span> = plt.subplots(figsize=(6,3))
+ax.scatter(x,y,c=y,cmap=af_cmap, norm=cmap_norm, s=5)
+ax.set_ylabel(<span style="color: #90A4AE;">"pLDDT score"</span>)
+ax.set_xlabel(<span style="color: #90A4AE;">"residue number"</span>)
+</pre>
+</div>
+<img src="./images/plddt_scatter.png"></img>
+</div>
+</div>
+
+
+<div id="outline-container-orgb2e6b90" class="outline-2">
+<h2 id="orgb2e6b90"><span class="section-number-2">2.</span> Resolution of an objective lens</h2>
+<div class="outline-text-2" id="text-2">
+<p>
+I was going through the excellent review article by Fazel et al. 2023 (<a href="https://arxiv.org/abs/2304.01456">https://arxiv.org/abs/2304.01456</a>) and something clicked when I looked at Figure 2. I never really understood why higher NA objective lenses are actually needed to resolve smaller separation between points sources. I've been taking the fact that higher NA ∝ higher resolution for granted!
+</p>
+
+<p>
+I made this animated version of the figure using matplotlib (without the objective lens):
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #673AB7;">import</span> numpy <span style="color: #673AB7;">as</span> np
+<span style="color: #673AB7;">import</span> matplotlib.pyplot <span style="color: #673AB7;">as</span> plt
+<span style="color: #673AB7;">from</span> matplotlib.animation <span style="color: #673AB7;">import</span> FuncAnimation
+<span style="color: #673AB7;">from</span> IPython.display <span style="color: #673AB7;">import</span> HTML
+
+plt.<span style="color: #263238; font-weight: bold;">rcParams</span>[<span style="color: #90A4AE;">"animation.embed_limit"</span>] = 40.0
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">setup coordinates</span>
+<span style="color: #263238; font-weight: bold;">dy</span> = 0.085
+<span style="color: #263238; font-weight: bold;">dx</span> = 0.085
+<span style="color: #263238; font-weight: bold;">xmax</span> = 40.0 <span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">micron</span>
+<span style="color: #263238; font-weight: bold;">ymax</span> = 20.0 
+<span style="color: #263238; font-weight: bold;">xpos</span> = 5.0
+<span style="color: #263238; font-weight: bold;">ycenter</span> = ymax / 2.0
+
+<span style="color: #263238; font-weight: bold;">y</span> = np.arange(0, ymax, dy)
+<span style="color: #263238; font-weight: bold;">x</span> = np.arange(0, xmax, dx)
+
+<span style="color: #263238; font-weight: bold;">Y</span>,<span style="color: #263238; font-weight: bold;">X</span> = np.meshgrid(y, x, indexing=<span style="color: #90A4AE;">'ij'</span>)
+<span style="color: #263238; font-weight: bold;">&#955;</span> = 0.800
+<span style="color: #263238; font-weight: bold;">k</span> = 2 * np.pi / &#955;
+
+<span style="color: #673AB7;">def</span> <span style="color: #263238; font-weight: bold;">compute_image</span>(sep):
+    <span style="color: #263238; font-weight: bold;">y1</span> = ycenter + sep / 2
+    <span style="color: #263238; font-weight: bold;">y2</span> = ycenter - sep / 2
+    <span style="color: #263238; font-weight: bold;">&#952;1</span> = np.sqrt((Y-y1)**2 + (X-xpos)**2)
+    <span style="color: #263238; font-weight: bold;">&#952;2</span> = np.sqrt((Y-y2)**2 + (X-xpos)**2)
+  <span style="color: #263238; font-weight: bold;">frame</span> = np.cos(k * &#952;1) + np.cos(k * &#952;2)
+  <span style="color: #673AB7;">return</span> frame
+
+<span style="color: #263238; font-weight: bold;">y_seps</span> = np.<span style="color: #673AB7;">abs</span>(np.linspace(-10, 10, num=60))
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">nseps = 200</span>
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">maxsep = 10.0</span>
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">y_seps = np.abs(maxsep * np.cos(2*np.pi/nseps * np.linspace(0,nseps)))</span>
+
+<span style="color: #263238; font-weight: bold;">frame</span> = compute_image(y_seps[0])
+
+<span style="color: #263238; font-weight: bold;">fig</span>, <span style="color: #263238; font-weight: bold;">ax</span> = plt.subplots(figsize=(10,5))
+ax.set_xlabel(<span style="color: #90A4AE;">"z-position, &#181;m"</span>)
+ax.set_ylabel(<span style="color: #90A4AE;">"y-position, &#181;m"</span>)
+<span style="color: #263238; font-weight: bold;">im</span> = ax.imshow(frame, extent=(0, xmax, 0, ymax), cmap=<span style="color: #90A4AE;">'cividis'</span>)
+<span style="color: #263238; font-weight: bold;">pt1</span> = ax.plot(xpos, ycenter + y_seps[0]/2, <span style="color: #90A4AE;">'wo'</span>, mec=<span style="color: #90A4AE;">'k'</span>, ms=7)
+<span style="color: #263238; font-weight: bold;">pt2</span> = ax.plot(xpos, ycenter - y_seps[0]/2, <span style="color: #90A4AE;">'wo'</span>, mec=<span style="color: #90A4AE;">'k'</span>, ms=7)
+
+<span style="color: #673AB7;">def</span> <span style="color: #263238; font-weight: bold;">update_frame</span>(i):
+    <span style="color: #263238; font-weight: bold;">new_frame</span> = compute_image(y_seps[i])
+    pt1[0].set_data([5.0], [ycenter + y_seps[i]/2])
+    pt2[0].set_data([5.0], [ycenter - y_seps[i]/2])
+    im.set_data(new_frame)
+    ax.set_title(f<span style="color: #90A4AE;">"&#916; = </span>{y_seps[i]:.2f}<span style="color: #90A4AE;"> &#181;m; &#955; = </span>{&#955; * 1000:.0f}<span style="color: #90A4AE;"> nm"</span>)
+    <span style="color: #673AB7;">return</span> im, pt1, pt2
+
+<span style="color: #263238; font-weight: bold;">anim</span> = FuncAnimation(fig, update_frame, frames=np.arange(y_seps.size), interval=50)
+
+anim.save(<span style="color: #90A4AE;">"point_separation_interference.mp4"</span>)
+</pre>
+</div>
+
+<video width="700"  controls loop> <source src="./images/point_separation_interference.mp4" type="video/mp4">Your browser does not support the video tag.</video>
+
+<p>
+The closer each points become, the larger the angles between of the destructive interference fringes. We need these fringes to actually resolve the points sources. When the separation becomes very close (smaller than the wavelength), you can see that the destructive interference "goes away" and the point source behave like a single points source. I didn't appreciate the fact that when points are far apart (much larger than the wavelength), these destructive interference fringes form even along y-coordinates between the points.. I guess I should think more about waves&#x2026;
+</p>
+</div>
+</div>
+
+<div id="outline-container-org05c286e" class="outline-2">
+<h2 id="org05c286e"><span class="section-number-2">3.</span> Taking a radial profile from an arbitrary center</h2>
+<div class="outline-text-2" id="text-3">
+<p>
+It turns out you can use <code>scipy.ndimage.mean</code> to take a radial average of an n-dimensional image. To take the radial average from an arbitrary center you can just use <code>scipy.ndimage.distance_transform_edt</code> to compute the radial coordinates.
+</p>
+
+<p>
+For this example, we'll create a cosine in 2D.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python" id="org05d6837"><span style="color: #673AB7;">import</span> numpy <span style="color: #673AB7;">as</span> np
+<span style="color: #673AB7;">import</span> scipy.ndimage <span style="color: #673AB7;">as</span> ndi
+<span style="color: #673AB7;">import</span> matplotlib.pyplot <span style="color: #673AB7;">as</span> plt
+
+<span style="color: #263238; font-weight: bold;">Ny</span>, <span style="color: #263238; font-weight: bold;">Nx</span> = 256, 256
+<span style="color: #263238; font-weight: bold;">originxy</span> = (150.0, 64.0)
+<span style="color: #263238; font-weight: bold;">x</span>, <span style="color: #263238; font-weight: bold;">y</span> = np.meshgrid(np.arange(Nx), np.arange(Ny))
+<span style="color: #263238; font-weight: bold;">&#920;</span> = np.sqrt((x - originxy[0])**2 + (y - originxy[1])**2)
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">specify wavenumber of cosine</span>
+<span style="color: #263238; font-weight: bold;">&#955;</span> = 50.0 <span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">wavelength</span>
+<span style="color: #263238; font-weight: bold;">k</span> = 2 * np.pi / &#955;
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">plot cosine wave</span>
+<span style="color: #263238; font-weight: bold;">coswave</span> = np.cos(k * &#920;)
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">calculate radial profile</span>
+<span style="color: #263238; font-weight: bold;">r_bins</span> = np.<span style="color: #673AB7;">round</span>(&#920;).astype(<span style="color: #673AB7;">int</span>)
+<span style="color: #263238; font-weight: bold;">unique_r</span> = np.unique(r_bins)
+<span style="color: #263238; font-weight: bold;">radial_profile</span> = ndi.mean(coswave, labels = r_bins, index = unique_r)
+
+<span style="color: #263238; font-weight: bold;">fig</span>, <span style="color: #263238; font-weight: bold;">ax</span> = plt.subplots(ncols=3, figsize=(10,3.2))
+ax[0].imshow(&#920;)
+ax[0].set_title(<span style="color: #90A4AE;">"radial coordinate"</span>)
+ax[1].imshow(coswave, cmap=<span style="color: #90A4AE;">'Greens'</span>)
+ax[1].plot(originxy[0], originxy[1], <span style="color: #90A4AE;">'bx'</span>)
+ax[1].set_title(f<span style="color: #90A4AE;">"2-D cosine wave; &#955;=</span>{&#955;}<span style="color: #90A4AE;">"</span>)
+ax[2].plot(unique_r, radial_profile, <span style="color: #90A4AE;">'k-'</span>, lw=1.5)
+ax[2].set_title(<span style="color: #90A4AE;">"radial profile"</span>)
+fig.tight_layout()
+fig.savefig(<span style="color: #90A4AE;">"./images/radial_profile.png"</span>)
+plt.close(fig)
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">needed for inline org-mode</span>
+<span style="color: #673AB7;">return</span> <span style="color: #90A4AE;">"./images/radial_profile.png"</span>
+
+</pre>
+</div>
+
+
+<div id="orgec623c0" class="figure">
+<p><img src="./images/radial_profile.png" alt="radial_profile.png" />
+</p>
+</div>
+
+<p>
+This can be useful when trying to compute radial average of a power spectrum
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #673AB7;">import</span> numpy <span style="color: #673AB7;">as</span> np
+<span style="color: #673AB7;">from</span> matplotlib.colors <span style="color: #673AB7;">import</span> LogNorm
+<span style="color: #673AB7;">import</span> scipy.ndimage <span style="color: #673AB7;">as</span> ndi
+<span style="color: #673AB7;">import</span> matplotlib.pyplot <span style="color: #673AB7;">as</span> plt
+<span style="color: #673AB7;">import</span> skimage <span style="color: #673AB7;">as</span> sk
+
+<span style="color: #263238; font-weight: bold;">img</span> = sk.data.human_mitosis()
+<span style="color: #263238; font-weight: bold;">ft_img</span> = np.fft.rfft2(img)
+<span style="color: #263238; font-weight: bold;">ps</span> = np.<span style="color: #673AB7;">abs</span>(ft_img)**2
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">get spacing from the frequency grids</span>
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">we dont want frequencies so we just multiply back with shape</span>
+<span style="color: #263238; font-weight: bold;">u</span> = np.fft.fftfreq(img.shape[0]) * img.shape[0]
+<span style="color: #263238; font-weight: bold;">v</span> = np.fft.rfftfreq(img.shape[1]) * img.shape[1]
+<span style="color: #263238; font-weight: bold;">ky</span>, <span style="color: #263238; font-weight: bold;">kx</span> = np.meshgrid(u,v, indexing=<span style="color: #90A4AE;">'ij'</span>)
+
+<span style="color: #263238; font-weight: bold;">&#958;</span> = np.sqrt(ky*ky + kx*kx)
+
+<span style="color: #263238; font-weight: bold;">fig</span>, <span style="color: #263238; font-weight: bold;">ax</span> = plt.subplots(ncols=3, figsize=(8, 3.5))
+ax[0].imshow(&#958;)
+ax[1].imshow(ps, norm=LogNorm())
+
+<span style="color: #263238; font-weight: bold;">freq_bins</span> = np.<span style="color: #673AB7;">round</span>(&#958;).astype(<span style="color: #673AB7;">int</span>)
+<span style="color: #263238; font-weight: bold;">unique_freqs</span> = np.unique(freq_bins)
+<span style="color: #263238; font-weight: bold;">ps_profile</span> = ndi.mean(ps, labels=freq_bins, index=unique_freqs)
+
+ax[2].plot(unique_freqs[5:], ps_profile[5:], <span style="color: #90A4AE;">'-'</span>)
+ax[2].set_yscale(<span style="color: #90A4AE;">"log"</span>)
+plt.savefig(<span style="color: #90A4AE;">"./images/power_spectrum.png"</span>)
+
+<span style="color: #673AB7;">return</span> <span style="color: #90A4AE;">"./images/power_spectrum.png"</span>
+
+</pre>
+</div>
+
+
+<div id="orgbe22f3c" class="figure">
+<p><img src="./images/power_spectrum.png" alt="power_spectrum.png" />
+</p>
+</div>
+</div>
+</div>
+
+<div id="outline-container-orga4c424c" class="outline-2">
+<h2 id="orga4c424c"><span class="section-number-2">4.</span> Making a multi-channel composite image with custom colormap.</h2>
+<div class="outline-text-2" id="text-4">
+<p>
+With a bonus of animating through the Z-slices. The link to the notebook is <a href="https://github.com/delnatan/delnatan.github.io/blob/master/jupyter_notebooks/make_movies_from_timelapse.ipynb">here</a> (via github).
+</p>
+
+<p>
+The tricks used here is a subject for future posts:
+</p>
+<ul class="org-ul">
+<li>displaying a 'frameless' image with <code>imshow()</code> in matplotlib</li>
+<li>mapping a grayscale image to an arbitrary colormap in matplotlib</li>
+<li>making composite multi-channel image with those said colormaps</li>
+<li>saving matplotlib animation as <code>.mp4</code> or an interactive HTML.</li>
+</ul>
+
+<iframe src="./images/cells3d_animation.html" width="500" height="500"></iframe>
+</div>
+</div>
+
+<div id="outline-container-org3920998" class="outline-2">
+<h2 id="org3920998"><span class="section-number-2">5.</span> Emulating an <code>argmax()</code> function</h2>
+<div class="outline-text-2" id="text-5">
+<p>
+You can emulate <code>argmax()</code> function (returns the index of the maximum value in a sequence) in Python by doing:
+</p>
+<div class="org-src-container">
+<pre class="src src-python"><span style="color: #263238; font-weight: bold;">mylist</span> = [1,7,3,1,5]
+<span style="color: #263238; font-weight: bold;">res</span> = <span style="color: #673AB7;">max</span>(<span style="color: #673AB7;">enumerate</span>(mylist), key=<span style="color: #673AB7;">lambda</span> x: x[1])
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">needed for inline org-mode</span>
+<span style="color: #673AB7;">return</span> res
+</pre>
+</div>
+<p>
+(1, 7)
+</p>
+
+<p>
+This returns the argmax and the max value from a list. I occasionally use this when I don't need to use <code>NumPy</code> for a simple script.
+</p>
+</div>
+</div>
+
+<div id="outline-container-org4c7a8d3" class="outline-2">
+<h2 id="org4c7a8d3"><span class="section-number-2">6.</span> Plotting multi-colored line in matplotlib</h2>
+<div class="outline-text-2" id="text-6">
+<p>
+When plotting the 2D trajectory of diffusing particles or diagnosing drift in microscopy timelapse data, it can be helpful to use color to indicate time. This can be achieved using the <code>matplotlib.collections.LineCollection</code> object. In this example, we'll simulate 2D diffusion and plot the trajectory of a single particle over time.
+</p>
+
+<div class="org-src-container">
+<pre class="src src-python" id="orge36ab21"><span style="color: #673AB7;">from</span> matplotlib.collections <span style="color: #673AB7;">import</span> LineCollection
+<span style="color: #673AB7;">from</span> matplotlib.colors <span style="color: #673AB7;">import</span> Normalize
+<span style="color: #673AB7;">import</span> matplotlib.pyplot <span style="color: #673AB7;">as</span> plt
+<span style="color: #673AB7;">import</span> numpy <span style="color: #673AB7;">as</span> np
+
+<span style="color: #263238; font-weight: bold;">dt</span> = 0.010
+<span style="color: #263238; font-weight: bold;">D_coef</span> = 1.0
+<span style="color: #263238; font-weight: bold;">Nt</span> = 25
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">simulate diffusion steps</span>
+<span style="color: #263238; font-weight: bold;">xsteps</span> = np.random.randn(Nt) * np.sqrt(2 * D_coef * dt)
+<span style="color: #263238; font-weight: bold;">ysteps</span> = np.random.randn(Nt) * np.sqrt(2 * D_coef * dt)
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">construct a (cumulative) trajectory from the steps</span>
+<span style="color: #263238; font-weight: bold;">x</span> = np.cumsum(xsteps)
+<span style="color: #263238; font-weight: bold;">y</span> = np.cumsum(ysteps)
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">assemble into Nt x 2 array</span>
+<span style="color: #263238; font-weight: bold;">xy</span> = np.column_stack([x,y])
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">create a list of line segments from xy[n, :] to xy[n+1, :]</span>
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">For N points, there will be N-1 line segments connecting between points</span>
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">use the 'np.newaxis = None' trick to create a new axis (at axis=1)</span>
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">this makes Nt-1 x 2 x 2 array to represent line segments 'from' -&gt; 'to'</span>
+<span style="color: #263238; font-weight: bold;">segments</span> = np.concatenate(
+    [xy[:-1,<span style="color: #673AB7;">None</span>,:], xy[1:,<span style="color: #673AB7;">None</span>,:]], axis=1
+)
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">create the line segments to be drawn</span>
+<span style="color: #263238; font-weight: bold;">lc</span> = LineCollection(
+    segments, cmap=<span style="color: #90A4AE;">"rainbow"</span>, norm=Normalize(0,Nt * dt),
+    linewidths=1.5
+)
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">this sets the data array for each segment</span>
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">each data point gets mapped to a color by the 'cmap' and 'norm'</span>
+lc.set_array(np.arange(Nt) * dt)
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">plot the data</span>
+<span style="color: #263238; font-weight: bold;">fig</span>, <span style="color: #263238; font-weight: bold;">ax</span> = plt.subplots()
+ax.add_collection(lc)
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">set axis limit</span>
+<span style="color: #263238; font-weight: bold;">axlim_min</span> = <span style="color: #673AB7;">min</span>(x.<span style="color: #673AB7;">min</span>(), y.<span style="color: #673AB7;">min</span>()) - 0.5
+<span style="color: #263238; font-weight: bold;">axlim_max</span> = <span style="color: #673AB7;">max</span>(x.<span style="color: #673AB7;">max</span>(), y.<span style="color: #673AB7;">max</span>()) + 0.5
+
+ax.set_xlim((axlim_min, axlim_max))
+ax.set_ylim((axlim_min, axlim_max))
+ax.set_aspect(<span style="color: #90A4AE;">"equal"</span>)
+
+fig.colorbar(lc, ax=ax, label=<span style="color: #90A4AE;">"time, seconds"</span>)
+
+fig.savefig(<span style="color: #90A4AE;">"./images/simulated_diffusion.png"</span>)
+plt.close(fig)
+
+<span style="color: #90A4AE;"># </span><span style="color: #90A4AE;">needed for inline org-mode</span>
+<span style="color: #673AB7;">return</span> <span style="color: #90A4AE;">"./images/simulated_diffusion.png"</span>
+
+</pre>
+</div>
+
+
+<div id="org2196de8" class="figure">
+<p><img src="./images/simulated_diffusion.png" alt="simulated_diffusion.png" />
+</p>
+</div>
+</div>
+</div>
+</div>
+<div id="postamble" class="status">
+<p class="author">Author: Daniel Elnatan</p>
+<p class="date">Created: 2023-04-20 Thu 15:44</p>
+<p class="validation"><a href="https://validator.w3.org/check?uri=referer">Validate</a></p>
+</div>
+</body>
+</html>
