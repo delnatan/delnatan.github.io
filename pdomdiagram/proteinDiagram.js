@@ -27,7 +27,7 @@ function drawDiagram() {
   // Set up SVG
   const margin = { top: 40, right: 20, bottom: 60, left: 20 };
   const width = 800 - margin.left - margin.right;
-  const height = 200 - margin.top - margin.bottom;
+  const height = 250 - margin.top - margin.bottom;
   const svg = d3
     .select('#diagramSvg')
     .append('svg')
@@ -52,6 +52,8 @@ function drawDiagram() {
     .attr('stroke', '#3d3d3d')
     .attr('stroke-width', 2);
 
+  const smallDomains = [];
+
   domains.forEach((domain, index) => {
     const domainWidth = xScale(domain.end) - xScale(domain.start);
     const domainHeight = 30;
@@ -71,29 +73,67 @@ function drawDiagram() {
         domain.color || colorPalette[index % colorPalette.length]
       );
 
-      // domain label
-      const label = svg
-        .append('text')
-        .attr('x', xScale(domain.start) + domainWidth / 2)
-        .attr('y', y + domainHeight / 2)
-        .attr('text-anchor', 'middle')
-        .attr('dominant-baseline', 'central')
-        .attr('font-size', '12px')
-        .text(domain.name);
+      const textWidth = getTextWidth(domain.name, '13 px sans-serif');
+      const boxWidth = xScale(domain.end) - xScale(domain.start);
 
-      // rotate label if too wide
-      if (getTextWidth(domain.name, '12px Arial') > domainWidth) {
-        label.attr(
-          'transform',
-          `rotate(-45, ${xScale(domain.start) + domainWidth / 2}, ${y - 5})`
-        );
+      // check text width against box width
+      if (boxWidth > textWidth + 10) {
+        // domain label
+        const label = svg
+          .append('text')
+          .attr('x', xScale(domain.start) + domainWidth / 2)
+          .attr('y', y + domainHeight / 2)
+          .attr('text-anchor', 'middle')
+          .attr('dominant-baseline', 'central')
+          .attr('font-size', '13px')
+          .text(domain.name);
+      } else {
+        // handle small domains separately
+        smallDomains.push({
+          name: domain.name,
+          x: xScale(domain.start) + boxWidth / 2,
+          y: y,
+          color: domain.color || colorPalette[index % colorPalette.length]
+        });
       }
     }
+
+    const annotationSpacing = 12;
+
+    svg
+      .selectAll('.small-domain-annotation')
+      .data(smallDomains)
+      .enter()
+      .append('g')
+      .attr('class', 'small-domain-annotation')
+      .each(function (d, i) {
+        const g = d3.select(this);
+        const annotationY = height / 1.4 + 2 + i * annotationSpacing;
+
+        g.append('line')
+          .attr('x1', d.x)
+          .attr('y1', d.y + domainHeight / 2)
+          .attr('x2', d.x)
+          .attr('y2', annotationY)
+          .attr('stroke', d.color)
+          .attr('stroke-width', 1);
+
+        g.append('text')
+          .attr('x', d.x)
+          .attr('y', annotationY + 10)
+          .attr('text-anchor', 'middle')
+          .attr('fill', d.color)
+          .attr('font-size', '13px')
+          .text(d.name);
+      });
   });
 
   // add axis
   const xAxis = d3.axisBottom(xScale);
-  svg.append('g').attr('transform', `translate(0, ${height})`).call(xAxis);
+  svg
+    .append('g')
+    .attr('transform', `translate(0, ${height * 1.05})`)
+    .call(xAxis);
 
   // Show save button
   document.getElementById('saveButton').style.display = 'inline-block';
@@ -189,7 +229,7 @@ function createProteinLine(svg, domain, index, lineY, capHeight, xScale) {
     .attr('y', lineY - 15)
     .attr('text-anchor', 'middle')
     .attr('fill', domain.color || colorPalette[index % colorPalette.length])
-    .attr('font-size', '10px')
+    .attr('font-size', '13px')
     .text(domain.name);
 
   return g;
