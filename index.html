@@ -72,28 +72,30 @@ The rise of big language models like Claude.ai has made it easier to create many
 	  <ul>
 	        <li><a href="../interactive_diffusion.html">Interactive diffusivity calculator</a></li>
                 <li><a href="pdomdiagram/index.html">Protein domain diagram</a></li>
-            </ul>
-        </section>
-    </main>
+				<li><a href="../DSF_dashboard.html">DSF dashboard</a></li>
+				<li><a href="../protparam.html">ProtParam</a></li>
+				</ul>
+				</section>
+				</main>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const navLinks = document.querySelectorAll('.nav-link');
-            const contents = document.querySelectorAll('.content');
+				<script>
+				document.addEventListener('DOMContentLoaded', function() {
+								const navLinks = document.querySelectorAll('.nav-link');
+								const contents = document.querySelectorAll('.content');
 
-            navLinks.forEach(link => {
-                link.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const targetId = this.getAttribute('data-target');
-                    
-                    contents.forEach(content => {
-                        content.classList.remove('active');
-                    });
-                    
-                    document.getElementById(targetId).classList.add('active');
-                });
-            });
-        });
-    </script>
+								navLinks.forEach(link => {
+												link.addEventListener('click', function(e) {
+																e.preventDefault();
+																const targetId = this.getAttribute('data-target');
+
+																contents.forEach(content => {
+																				content.classList.remove('active');
+																				});
+
+																document.getElementById(targetId).classList.add('active');
+																});
+												});
+								});
+</script>
 </body>
 </html>

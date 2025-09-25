@@ -1,0 +1,159 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
+
+/* Modern CSS Reset */
+*, *::before, *::after {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+/* Typography and Base Styles */
+:root {
+    --primary-color: #2563eb;
+    --text-primary: #1f2937;
+    --text-secondary: #6b7280;
+    --bg-primary: #ffffff;
+    --bg-secondary: #f9fafb;
+    --border-light: #e5e7eb;
+    --accent-blue: #dbeafe;
+    --accent-yellow: #fef3c7;
+}
+
+body {
+    font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    line-height: 1.6;
+    color: var(--text-primary);
+    background: var(--bg-primary);
+    font-size: 18px;
+}
+
+/* Layout */
+.container {
+    max-width: 700px;
+    margin: 0 auto;
+    padding: 3rem 1.5rem;
+}
+
+/* Typography */
+header {
+    margin-bottom: 3rem;
+    text-align: center;
+}
+
+h1 {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+    color: var(--text-primary);
+}
+
+.subtitle {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    font-weight: 400;
+    margin-bottom: 0;
+}
+
+h2 {
+    font-size: 2rem;
+    font-weight: 600;
+    margin: 3rem 0 1.5rem 0;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border-light);
+    padding-bottom: 0.5rem;
+}
+
+h3 {
+    font-size: 1.25rem;
+    font-weight: 600;
+    margin: 1.5rem 0 1rem 0;
+    color: var(--text-primary);
+}
+
+p {
+    margin-bottom: 1.5rem;
+    color: var(--text-primary);
+}
+
+ul {
+    margin: 1rem 0 1.5rem 1.5rem;
+}
+
+li {
+    margin-bottom: 0.5rem;
+}
+
+/* Sections */
+section {
+    margin-bottom: 4rem;
+}
+
+.intro {
+    font-size: 1.1rem;
+    line-height: 1.7;
+}
+
+/* Concept Boxes */
+.concept-box {
+    padding: 2rem;
+    border-radius: 0.75rem;
+    margin: 2.5rem 0;
+    border: 1px solid;
+    position: relative;
+}
+
+.concept-box::before {
+    content: attr(data-type);
+    position: absolute;
+    top: -0.75rem;
+    left: 1.5rem;
+    background: var(--bg-primary);
+    padding: 0 1rem;
+    font-size: 0.875rem;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+
+.definition {
+    background: var(--accent-blue);
+    border-color: #93c5fd;
+    color: #1e40af;
+}
+
+.definition::before {
+    color: #1e40af;
+}
+
+.example {
+    background: var(--accent-yellow);
+    border-color: #fcd34d;
+    color: #92400e;
+}
+
+.example::before {
+    color: #92400e;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .container {
+        padding: 2rem 1rem;
+    }
+    
+    h1 {
+        font-size: 2.5rem;
+    }
+    
+    h2 {
+        font-size: 1.75rem;
+    }
+    
+    body {
+        font-size: 16px;
+    }
+    
+    .intro {
+        font-size: 1rem;
+    }
+}

@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Mathematical Notes</title>
+	<link rel="stylesheet" href="styles.css">
+	  <script src="https://polyfill.io/v3/polyfill.min.js?features=es6"></script>
+	  <script type="text/x-mathjax-config">
+            MathJax = {
+            tex: {
+            inlineMath: [['$', '$'], ['\\(', '\\)']],
+            displayMath: [['$$', '$$'], ['\\[', '\\]']],
+	    processEscapes: true,
+            };
+	  </script>
+	  <script id="MathJax-script" async src="https://cdn.jsdelivr.net/npm/mathjax@3/es5/tex-mml-chtml.js"></script>
+
+	</head>
+	<body>
+	  <div class="container">
+            <header>
+              <h1>John Skilling's conjugate gradient algorithm</h1>
+              <p class="subtitle">Study notes<br>Daniel Elnatan<br>July 2025</p>
+            </header>
+
+            <main>
+              <section class="intro">
+                <h2>Introduction</h2>
+		In many linear inverse problems, one collects some observation $y$, knowing the parameter-to-data transform, R. $x$ is to be solved. Usually this is done by minimizing the quadratic functional:
+
+		$$\chi^2 = \| \mathbf{R}x - y \|^2$$
+
+		Expanding the expression and dropping term that doesn't depend on x, we get:
+		$$\chi^2 = x^t \mathbf{A} x - 2 y^t \mathbf{R}x$$
+		Where $\mathbf{A} = \mathbf{R}^t \mathbf{R}$.
+		<div class="concept-box definition" data-type="Definition">
+		  The expanded quadratic expression is
+		  $$
+		  x^t \mathbf{R}^t \mathbf{R} x - x^t \mathbf{R}^t y - y^t \mathbf{R}x + y^t y
+		  $$
+		  but because the dot product is symmetric:
+		  $$
+
+		  x^t \mathbf{R}^t y = (\mathbf{R}x)^t y = y^t (\mathbf{R}x)
+
+		  $$
+		  the non-quadratic term can be combined.		
+		</div>
+
+		The action of the linear operator $\mathbf{R}$ can be 'simulated' by. Test $\bm{T}$
+
+              </section>
+
+              <section>
+                <h2>Section 1: Vector Spaces</h2>
+                
+                <p>A vector space is one of the most fundamental structures in mathematics, providing the foundation for linear algebra, functional analysis, and much of modern mathematics.</p>
+
+                <div class="concept-box definition" data-type="Definition">
+                  <h3>Vector Space</h3>
+                  <p>A vector space $V$ over a field $\mathbb{F}$ is a set equipped with two operations:</p>
+                  <ul>
+                    <li><strong>Vector addition:</strong> $+ : V \times V \to V$</li>
+                    <li><strong>Scalar multiplication:</strong> $\cdot : \mathbb{F} \times V \to V$</li>
+                  </ul>
+                  <p>These operations must satisfy eight axioms including commutativity, associativity, and distributivity.</p>
+                </div>
+
+                <p>The beauty of vector spaces lies in their generality. Whether we're working with ordinary vectors in $\mathbb{R}^3$, polynomials, or even functions, the same algebraic structure applies.</p>
+
+                <div class="concept-box example" data-type="Example">
+                  <h3>Examples of Vector Spaces</h3>
+                  <p>Common examples include:</p>
+                  <ul>
+                    <li>$\mathbb{R}^n$ - the space of $n$-tuples of real numbers</li>
+                    <li>$\mathcal{P}_n$ - polynomials of degree at most $n$</li>
+                    <li>$C[a,b]$ - continuous functions on the interval $[a,b]$</li>
+                  </ul>
+                </div>
+
+                <p>Understanding these spaces and their properties opens the door to linear transformations, eigenvalues, and the rich theory that follows.</p>
+              </section>
+            </main>
+	  </div>
+	</body>
+      </html>
