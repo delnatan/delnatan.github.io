@@ -1,101 +1,114 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daniel Elnatan's GitHub Page</title>
-    <style>
-        body {
-            font-family: Arial, sans-serif;
-            line-height: 1.6;
-            color: #333;
-            max-width: 800px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-        header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #eee;
-        }
-        h1 {
-            margin: 0;
-        }
-        nav ul {
-            list-style-type: none;
-            padding: 0;
-        }
-        nav ul li {
-            display: inline;
-            margin-left: 20px;
-        }
-        a {
-            text-decoration: none;
-            color: #0366d6;
-        }
-        .content {
-            display: none;
-            padding-top: 20px;
-        }
-        .active {
-            display: block;
-        }
-    </style>
-</head>
-<body>
-    <header>
-        <h1>Daniel Elnatan</h1>
-        <nav>
-            <ul>
-                <li><a href="#" class="nav-link" data-target="about">About</a></li>
-                <li><a href="#" class="nav-link" data-target="blog">Blog</a></li>
-                <li><a href="#" class="nav-link" data-target="interests">Misc.</a></li>
-            </ul>
-        </nav>
-    </header>
-
-    <main>
-        <section id="about" class="content active">
-            <h2>About Me</h2>
-            <p>Welcome to my GitHub page! I'm currently a project scientist in the <a href="https://starr.faculty.ucdavis.edu">Starr-Luxton labs</a> at UC Davis</p>
-        </section>
-
-        <section id="blog" class="content">
-	    See <a href="blog/index.html">blog</a> here.
-        </section>
-
-        <section id="interests" class="content">
-            <h2>Miscellaneous</h2>
-The rise of big language models like Claude.ai has made it easier to create many programming projects. Here are some concepts that I'm exploring:
-	  <ul>
-	        <li><a href="../interactive_diffusion.html">Interactive diffusivity calculator</a></li>
-                <li><a href="pdomdiagram/index.html">Protein domain diagram</a></li>
-				<li><a href="../DSF_dashboard.html">DSF dashboard</a></li>
-				<li><a href="../protparam.html">ProtParam</a></li>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Daniel Elnatan's GitHub Page</title>
+		<style>
+			body {
+				font-family: Arial, sans-serif;
+				line-height: 1.6;
+				color: #333;
+				max-width: 800px;
+				margin: 0 auto;
+				padding: 20px;
+			}
+			header {
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				padding-bottom: 20px;
+				border-bottom: 1px solid #eee;
+			}
+			h1 {
+				margin: 0;
+			}
+			nav ul {
+				list-style-type: none;
+				padding: 0;
+			}
+			nav ul li {
+				display: inline;
+				margin-left: 20px;
+			}
+			a {
+				text-decoration: none;
+				color: #0366d6;
+			}
+			.content {
+				display: none;
+				padding-top: 20px;
+			}
+			.active {
+				display: block;
+			}
+		</style>
+	</head>
+	<body>
+		<header>
+			<h1>Daniel Elnatan</h1>
+			<nav>
+				<ul>
+					<li><a href="#" class="nav-link" data-target="about">About</a></li>
+					<li><a href="#" class="nav-link" data-target="blog">Blog</a></li>
+					<li>
+						<a href="#" class="nav-link" data-target="interests">Misc.</a>
+					</li>
 				</ul>
-				</section>
-				</main>
+			</nav>
+		</header>
 
-				<script>
-				document.addEventListener('DOMContentLoaded', function() {
-								const navLinks = document.querySelectorAll('.nav-link');
-								const contents = document.querySelectorAll('.content');
+		<main>
+			<section id="about" class="content active">
+				<h2>About Me</h2>
+				<p>
+					Welcome to my GitHub page! I'm currently a project scientist in the
+					<a href="https://starr.faculty.ucdavis.edu">Starr-Luxton labs</a> at
+					UC Davis
+				</p>
+			</section>
 
-								navLinks.forEach(link => {
-												link.addEventListener('click', function(e) {
-																e.preventDefault();
-																const targetId = this.getAttribute('data-target');
+			<section id="blog" class="content">
+				See <a href="blog/index.html">blog</a> here.
+			</section>
 
-																contents.forEach(content => {
-																				content.classList.remove('active');
-																				});
+			<section id="interests" class="content">
+				<h2>Miscellaneous</h2>
+				The rise of big language models like Claude.ai has made it easier to
+				create many programming projects. Here are some concepts that I'm
+				exploring:
+				<ul>
+					<li>
+						<a href="../interactive_diffusion.html"
+							>Interactive diffusivity calculator</a
+						>
+					</li>
+					<li><a href="pdomdiagram/index.html">Protein domain diagram</a></li>
+					<li><a href="../DSF_dashboard.html">DSF dashboard</a></li>
+					<li><a href="../protparam.html">ProtParam</a></li>
+					<li><a href="../chimerax_notes.html">ChimeraX notes</a></li>
+				</ul>
+			</section>
+		</main>
 
-																document.getElementById(targetId).classList.add('active');
-																});
-												});
-								});
-</script>
-</body>
+		<script>
+			document.addEventListener('DOMContentLoaded', function () {
+				const navLinks = document.querySelectorAll('.nav-link');
+				const contents = document.querySelectorAll('.content');
+
+				navLinks.forEach((link) => {
+					link.addEventListener('click', function (e) {
+						e.preventDefault();
+						const targetId = this.getAttribute('data-target');
+
+						contents.forEach((content) => {
+							content.classList.remove('active');
+						});
+
+						document.getElementById(targetId).classList.add('active');
+					});
+				});
+			});
+		</script>
+	</body>
 </html>
