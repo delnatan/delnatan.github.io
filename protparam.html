@@ -1,326 +1,468 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Modern Protein Parameter Calculator</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-        }
-        /* Simple transition for result cards */
-        .result-card {
-            opacity: 0;
-            transform: translateY(20px);
-            transition: opacity 0.5s ease-out, transform 0.5s ease-out;
-        }
-        .result-card.visible {
-            opacity: 1;
-            transform: translateY(0);
-        }
-        /* Custom scrollbar for textarea */
-        textarea::-webkit-scrollbar {
-            width: 8px;
-        }
-        textarea::-webkit-scrollbar-track {
-            background: #f1f5f9;
-            border-radius: 10px;
-        }
-        textarea::-webkit-scrollbar-thumb {
-            background: #94a3b8;
-            border-radius: 10px;
-        }
-        textarea::-webkit-scrollbar-thumb:hover {
-            background: #64748b;
-        }
-    </style>
-</head>
-<body class="bg-slate-50 text-slate-800">
+    <head>
+        <meta charset="UTF-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <title>Modern Protein Parameter Calculator</title>
+        <script src="https://cdn.tailwindcss.com"></script>
+        <link
+            href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap"
+            rel="stylesheet"
+        />
+        <style>
+            body {
+                font-family: 'Inter', sans-serif;
+            }
+            /* Simple transition for result cards */
+            .result-card {
+                opacity: 0;
+                transform: translateY(20px);
+                transition:
+                    opacity 0.5s ease-out,
+                    transform 0.5s ease-out;
+            }
+            .result-card.visible {
+                opacity: 1;
+                transform: translateY(0);
+            }
+            /* Custom scrollbar for textarea */
+            textarea::-webkit-scrollbar {
+                width: 8px;
+            }
+            textarea::-webkit-scrollbar-track {
+                background: #f1f5f9;
+                border-radius: 10px;
+            }
+            textarea::-webkit-scrollbar-thumb {
+                background: #94a3b8;
+                border-radius: 10px;
+            }
+            textarea::-webkit-scrollbar-thumb:hover {
+                background: #64748b;
+            }
+        </style>
+    </head>
+    <body class="bg-slate-50 text-slate-800">
+        <div class="container mx-auto p-4 md:p-8 max-w-4xl">
+            <!-- Header -->
+            <header class="text-center mb-8">
+                <h1 class="text-4xl md:text-5xl font-bold text-slate-900">
+                    Protein Parameter Calculator
+                </h1>
+                <p class="mt-2 text-lg text-slate-600">
+                    A modern tool inspired by ProtParam for physicochemical
+                    analysis.
+                </p>
+            </header>
 
-    <div class="container mx-auto p-4 md:p-8 max-w-4xl">
-        <!-- Header -->
-        <header class="text-center mb-8">
-            <h1 class="text-4xl md:text-5xl font-bold text-slate-900">Protein Parameter Calculator</h1>
-            <p class="mt-2 text-lg text-slate-600">A modern tool inspired by ProtParam for physicochemical analysis.</p>
-        </header>
-
-        <!-- Input Section -->
-        <div class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200">
-            <label for="sequence" class="block text-lg font-semibold mb-2 text-slate-700">Enter your protein/peptide sequence:</label>
-            <textarea id="sequence" class="w-full h-48 p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 resize-y" placeholder="Paste your sequence here (e.g., MKTAYIAKQRQISFVKSHFSRQLEERLGLIE...)\nNumbers and whitespace will be ignored."></textarea>
-            <div class="mt-4 flex justify-end">
-                <button id="calculateBtn" class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-transform transform hover:scale-105">
-                    Calculate Parameters
-                </button>
+            <!-- Input Section -->
+            <div
+                class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200"
+            >
+                <label
+                    for="sequence"
+                    class="block text-lg font-semibold mb-2 text-slate-700"
+                    >Enter your protein/peptide sequence:</label
+                >
+                <textarea
+                    id="sequence"
+                    class="w-full h-48 p-4 border border-slate-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 resize-y"
+                    placeholder="Paste your sequence here (e.g., MKTAYIAKQRQISFVKSHFSRQLEERLGLIE...)\nNumbers and whitespace will be ignored."
+                ></textarea>
+                <div class="mt-4 flex justify-end">
+                    <button
+                        id="calculateBtn"
+                        class="bg-blue-600 text-white font-bold py-3 px-8 rounded-lg hover:bg-blue-700 active:bg-blue-800 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-opacity-50 transition-transform transform hover:scale-105"
+                    >
+                        Calculate Parameters
+                    </button>
+                </div>
             </div>
-        </div>
-        
-        <!-- Error/Info Message Area -->
-        <div id="messageArea" class="mt-6 text-center"></div>
 
-        <!-- Results Section -->
-        <div id="results" class="mt-8 space-y-6">
-            <!-- Physicochemical Properties -->
-            <div class="grid md:grid-cols-2 gap-6">
-                 <!-- Molecular Weight & pI -->
-                <div id="physicoCard" class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 result-card">
-                    <h2 class="text-2xl font-bold mb-4 text-slate-800">Properties</h2>
-                    <div class="space-y-4">
-                        <div>
-                            <p class="text-sm font-medium text-slate-500">Molecular Weight</p>
-                            <p id="mw" class="text-2xl font-semibold text-blue-600">-</p>
+            <!-- Error/Info Message Area -->
+            <div id="messageArea" class="mt-6 text-center"></div>
+
+            <!-- Results Section -->
+            <div id="results" class="mt-8 space-y-6">
+                <!-- Physicochemical Properties -->
+                <div class="grid md:grid-cols-2 gap-6">
+                    <!-- Molecular Weight & pI -->
+                    <div
+                        id="physicoCard"
+                        class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 result-card"
+                    >
+                        <h2 class="text-2xl font-bold mb-4 text-slate-800">
+                            Properties
+                        </h2>
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500">
+                                    Molecular Weight
+                                </p>
+                                <p
+                                    id="mw"
+                                    class="text-2xl font-semibold text-blue-600"
+                                >
+                                    -
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-500">
+                                    Theoretical pI
+                                </p>
+                                <p
+                                    id="pi"
+                                    class="text-2xl font-semibold text-blue-600"
+                                >
+                                    -
+                                </p>
+                            </div>
                         </div>
-                        <div>
-                            <p class="text-sm font-medium text-slate-500">Theoretical pI</p>
-                            <p id="pi" class="text-2xl font-semibold text-blue-600">-</p>
+                    </div>
+
+                    <!-- Extinction Coefficient -->
+                    <div
+                        id="extinctionCard"
+                        class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 result-card"
+                    >
+                        <h2 class="text-2xl font-bold mb-4 text-slate-800">
+                            Extinction Coefficient
+                        </h2>
+                        <p class="text-sm text-slate-500 mb-4">
+                            Calculated in M<sup>-1</sup> cm<sup>-1</sup> at 280
+                            nm.
+                        </p>
+                        <div class="space-y-4">
+                            <div>
+                                <p class="text-sm font-medium text-slate-500">
+                                    Assuming all Cys residues are reduced
+                                </p>
+                                <p
+                                    id="ecReduced"
+                                    class="text-xl font-semibold text-blue-600"
+                                >
+                                    -
+                                </p>
+                            </div>
+                            <div>
+                                <p class="text-sm font-medium text-slate-500">
+                                    Assuming all Cys form cystines
+                                </p>
+                                <p
+                                    id="ecOxidized"
+                                    class="text-xl font-semibold text-blue-600"
+                                >
+                                    -
+                                </p>
+                            </div>
                         </div>
                     </div>
                 </div>
 
-                <!-- Extinction Coefficient -->
-                <div id="extinctionCard" class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 result-card">
-                     <h2 class="text-2xl font-bold mb-4 text-slate-800">Extinction Coefficient</h2>
-                    <p class="text-sm text-slate-500 mb-4">Calculated in M<sup>-1</sup> cm<sup>-1</sup> at 280 nm.</p>
-                    <div class="space-y-4">
-                        <div>
-                            <p class="text-sm font-medium text-slate-500">Assuming all Cys residues are reduced</p>
-                            <p id="ecReduced" class="text-xl font-semibold text-blue-600">-</p>
-                        </div>
-                        <div>
-                            <p class="text-sm font-medium text-slate-500">Assuming all Cys form cystines</p>
-                            <p id="ecOxidized" class="text-xl font-semibold text-blue-600">-</p>
-                        </div>
+                <!-- Amino Acid Composition -->
+                <div
+                    id="compositionCard"
+                    class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 result-card"
+                >
+                    <h2 class="text-2xl font-bold mb-4 text-slate-800">
+                        Amino Acid Composition
+                    </h2>
+                    <div class="overflow-x-auto">
+                        <table class="min-w-full divide-y divide-slate-200">
+                            <thead class="bg-slate-50">
+                                <tr>
+                                    <th
+                                        class="px-4 py-2 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                                    >
+                                        Amino Acid
+                                    </th>
+                                    <th
+                                        class="px-4 py-2 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                                    >
+                                        Count
+                                    </th>
+                                    <th
+                                        class="px-4 py-2 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider"
+                                    >
+                                        Percentage (%)
+                                    </th>
+                                </tr>
+                            </thead>
+                            <tbody
+                                id="compositionTable"
+                                class="bg-white divide-y divide-slate-200"
+                            >
+                                <!-- JS will populate this -->
+                            </tbody>
+                        </table>
                     </div>
                 </div>
             </div>
-            
-            <!-- Amino Acid Composition -->
-            <div id="compositionCard" class="bg-white p-6 rounded-2xl shadow-lg border border-slate-200 result-card">
-                <h2 class="text-2xl font-bold mb-4 text-slate-800">Amino Acid Composition</h2>
-                <div class="overflow-x-auto">
-                    <table class="min-w-full divide-y divide-slate-200">
-                        <thead class="bg-slate-50">
-                            <tr>
-                                <th class="px-4 py-2 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Amino Acid</th>
-                                <th class="px-4 py-2 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Count</th>
-                                <th class="px-4 py-2 text-left text-xs font-semibold text-slate-500 uppercase tracking-wider">Percentage (%)</th>
-                            </tr>
-                        </thead>
-                        <tbody id="compositionTable" class="bg-white divide-y divide-slate-200">
-                            <!-- JS will populate this -->
-                        </tbody>
-                    </table>
-                </div>
-            </div>
         </div>
-    </div>
 
-    <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        // --- DATA CONSTANTS ---
-        const aminoAcids = {
-            'A': { name: 'Alanine', weight: 89.09 }, 'R': { name: 'Arginine', weight: 174.20 },
-            'N': { name: 'Asparagine', weight: 132.12 }, 'D': { name: 'Aspartic Acid', weight: 133.10 },
-            'C': { name: 'Cysteine', weight: 121.16 }, 'Q': { name: 'Glutamine', weight: 146.15 },
-            'E': { name: 'Glutamic Acid', weight: 147.13 }, 'G': { name: 'Glycine', weight: 75.07 },
-            'H': { name: 'Histidine', weight: 155.16 }, 'I': { name: 'Isoleucine', weight: 131.17 },
-            'L': { name: 'Leucine', weight: 131.17 }, 'K': { name: 'Lysine', weight: 146.19 },
-            'M': { name: 'Methionine', weight: 149.21 }, 'F': { name: 'Phenylalanine', weight: 165.19 },
-            'P': { name: 'Proline', weight: 115.13 }, 'S': { name: 'Serine', weight: 105.09 },
-            'T': { name: 'Threonine', weight: 119.12 }, 'W': { name: 'Tryptophan', weight: 204.23 },
-            'Y': { name: 'Tyrosine', weight: 181.19 }, 'V': { name: 'Valine', weight: 117.15 }
-        };
-        const waterWeight = 18.01528;
+        <script>
+            document.addEventListener('DOMContentLoaded', function () {
+                // --- DATA CONSTANTS ---
+                // taken from https://web.expasy.org/findmod/findmod_masses.html#AA
+                const aminoAcids = {
+                    A: { name: 'Alanine', weight: 71.0788 },
+                    R: { name: 'Arginine', weight: 156.1875 },
+                    N: { name: 'Asparagine', weight: 114.1038 },
+                    D: { name: 'Aspartic acid', weight: 115.0886 },
+                    C: { name: 'Cysteine', weight: 103.1388 },
+                    E: { name: 'Glutamic acid', weight: 129.1155 },
+                    Q: { name: 'Glutamine', weight: 128.1307 },
+                    G: { name: 'Glycine', weight: 57.0519 },
+                    H: { name: 'Histidine', weight: 137.1411 },
+                    I: { name: 'Isoleucine', weight: 113.1594 },
+                    L: { name: 'Leucine', weight: 113.1594 },
+                    K: { name: 'Lysine', weight: 128.1741 },
+                    M: { name: 'Methionine', weight: 131.1926 },
+                    F: { name: 'Phenylalanine', weight: 147.1766 },
+                    P: { name: 'Proline', weight: 97.1167 },
+                    S: { name: 'Serine', weight: 87.0782 },
+                    T: { name: 'Threonine', weight: 101.1051 },
+                    W: { name: 'Tryptophan', weight: 186.2132 },
+                    Y: { name: 'Tyrosine', weight: 163.176 },
+                    V: { name: 'Valine', weight: 99.1326 }
+                };
 
-        const pKa = {
-            'N_term': 9.69, 'C_term': 2.34,
-            'K': 10.53, 'R': 12.48, 'H': 6.00,
-            'D': 3.86, 'E': 4.25, 'C': 8.33, 'Y': 10.07
-        };
+                const waterWeight = 18.01528;
 
-        const extinctionCoefficients = {
-            'W': 5500, 'Y': 1490, 'C': 125
-        };
-        
-        // --- DOM ELEMENTS ---
-        const sequenceInput = document.getElementById('sequence');
-        const calculateBtn = document.getElementById('calculateBtn');
-        const messageArea = document.getElementById('messageArea');
-        const resultsContainer = document.getElementById('results');
-        const compositionTable = document.getElementById('compositionTable');
-        const mwOutput = document.getElementById('mw');
-        const piOutput = document.getElementById('pi');
-        const ecReducedOutput = document.getElementById('ecReduced');
-        const ecOxidizedOutput = document.getElementById('ecOxidized');
+                const pKa = {
+                    N_term: 9.69,
+                    C_term: 2.34,
+                    K: 10.53,
+                    R: 12.48,
+                    H: 6.0,
+                    D: 3.86,
+                    E: 4.25,
+                    C: 8.33,
+                    Y: 10.07
+                };
 
-        // --- EVENT LISTENER ---
-        calculateBtn.addEventListener('click', handleCalculation);
+                const extinctionCoefficients = {
+                    W: 5500,
+                    Y: 1490,
+                    C: 125
+                };
 
-        // --- MAIN CALCULATION HANDLER ---
-        function handleCalculation() {
-            const originalText = sequenceInput.value;
-            // 1. Sanitize the input sequence
-            const sequence = originalText.toUpperCase().replace(/[^A-Z]/g, '');
+                // --- DOM ELEMENTS ---
+                const sequenceInput = document.getElementById('sequence');
+                const calculateBtn = document.getElementById('calculateBtn');
+                const messageArea = document.getElementById('messageArea');
+                const resultsContainer = document.getElementById('results');
+                const compositionTable =
+                    document.getElementById('compositionTable');
+                const mwOutput = document.getElementById('mw');
+                const piOutput = document.getElementById('pi');
+                const ecReducedOutput = document.getElementById('ecReduced');
+                const ecOxidizedOutput = document.getElementById('ecOxidized');
 
-            if (!sequence) {
-                showMessage('Please enter a valid protein sequence.', 'error');
-                hideResults();
-                return;
-            }
-            
-            showMessage(`Analyzing a sequence of ${sequence.length} amino acids.`, 'info');
-            
-            // Show loading state
-            calculateBtn.textContent = 'Calculating...';
-            calculateBtn.disabled = true;
+                // --- EVENT LISTENER ---
+                calculateBtn.addEventListener('click', handleCalculation);
 
-            // Use a short timeout to allow the UI to update before heavy calculations
-            setTimeout(() => {
-                // 2. Perform all calculations
-                const counts = calculateAminoAcidComposition(sequence);
-                const molecularWeight = calculateMolecularWeight(counts, sequence.length);
-                const extinctionCoefficient = calculateExtinctionCoefficient(counts);
-                const isoelectricPoint = calculatePI(counts);
+                // --- MAIN CALCULATION HANDLER ---
+                function handleCalculation() {
+                    const originalText = sequenceInput.value;
+                    // 1. Sanitize the input sequence
+                    const sequence = originalText
+                        .toUpperCase()
+                        .replace(/[^A-Z]/g, '');
 
-                // 3. Update the UI with results
-                updateCompositionTable(counts, sequence.length);
-                mwOutput.textContent = `${molecularWeight.toLocaleString('en-US', {maximumFractionDigits: 2})} Da`;
-                piOutput.textContent = isoelectricPoint.toFixed(2);
-                ecReducedOutput.textContent = extinctionCoefficient.reduced.toLocaleString('en-US');
-                ecOxidizedOutput.textContent = extinctionCoefficient.oxidized.toLocaleString('en-US');
+                    if (!sequence) {
+                        showMessage(
+                            'Please enter a valid protein sequence.',
+                            'error'
+                        );
+                        hideResults();
+                        return;
+                    }
 
-                // 4. Show results with a nice transition
-                showResults();
+                    showMessage(
+                        `Analyzing a sequence of ${sequence.length} amino acids.`,
+                        'info'
+                    );
 
-                // Reset button state
-                calculateBtn.textContent = 'Calculate Parameters';
-                calculateBtn.disabled = false;
-            }, 100);
-        }
-        
-        // --- CALCULATION FUNCTIONS ---
+                    // Show loading state
+                    calculateBtn.textContent = 'Calculating...';
+                    calculateBtn.disabled = true;
 
-        function calculateAminoAcidComposition(sequence) {
-            const counts = {};
-            for (const code in aminoAcids) {
-                counts[code] = 0;
-            }
-            for (const aa of sequence) {
-                if (counts.hasOwnProperty(aa)) {
-                    counts[aa]++;
+                    // Use a short timeout to allow the UI to update before heavy calculations
+                    setTimeout(() => {
+                        // 2. Perform all calculations
+                        const counts = calculateAminoAcidComposition(sequence);
+                        const molecularWeight = calculateMolecularWeight(
+                            counts,
+                            sequence.length
+                        );
+                        const extinctionCoefficient =
+                            calculateExtinctionCoefficient(counts);
+                        const isoelectricPoint = calculatePI(counts);
+
+                        // 3. Update the UI with results
+                        updateCompositionTable(counts, sequence.length);
+                        mwOutput.textContent = `${molecularWeight.toLocaleString('en-US', { maximumFractionDigits: 2 })} Da`;
+                        piOutput.textContent = isoelectricPoint.toFixed(2);
+                        ecReducedOutput.textContent =
+                            extinctionCoefficient.reduced.toLocaleString(
+                                'en-US'
+                            );
+                        ecOxidizedOutput.textContent =
+                            extinctionCoefficient.oxidized.toLocaleString(
+                                'en-US'
+                            );
+
+                        // 4. Show results with a nice transition
+                        showResults();
+
+                        // Reset button state
+                        calculateBtn.textContent = 'Calculate Parameters';
+                        calculateBtn.disabled = false;
+                    }, 100);
                 }
-            }
-            return counts;
-        }
 
-        function calculateMolecularWeight(counts) {
-            let totalWeight = 0;
-            for (const aa in counts) {
-                totalWeight += counts[aa] * aminoAcids[aa].weight;
-            }
-            // The formula is Sum(AA_weights) - (Num_AA - 1) * H2O_weight
-            // A simpler way is Sum(AA_residue_weights) + H2O_weight
-            // The weights in the 'aminoAcids' object are for the full amino acids, not residues.
-            // When forming a peptide bond, one water molecule is lost.
-            const peptideBonds = Math.max(0, Object.values(counts).reduce((a, b) => a + b, 0) - 1);
-            totalWeight -= peptideBonds * waterWeight;
+                // --- CALCULATION FUNCTIONS ---
 
-            // If the sequence is not empty, we should add back one water molecule for the termini
-            if (peptideBonds >= 0 && Object.values(counts).reduce((a, b) => a + b, 0) > 0) {
-                 totalWeight += waterWeight;
-            }
-
-            return totalWeight > 0 ? totalWeight : 0;
-        }
-        
-        function calculateExtinctionCoefficient(counts) {
-            const nW = counts['W'];
-            const nY = counts['Y'];
-            const nC = counts['C'];
-            
-            const reduced = (nW * extinctionCoefficients['W']) + (nY * extinctionCoefficients['Y']);
-            const oxidized = reduced + (Math.floor(nC / 2) * extinctionCoefficients['C']);
-            
-            return { reduced, oxidized };
-        }
-
-        function calculateNetCharge(pH, counts) {
-            let charge = 0;
-            // N-terminus
-            charge += 1 / (1 + Math.pow(10, pH - pKa.N_term));
-            // C-terminus
-            charge -= 1 / (1 + Math.pow(10, pKa.C_term - pH));
-            // Positive side chains
-            charge += counts['K'] * (1 / (1 + Math.pow(10, pH - pKa.K)));
-            charge += counts['R'] * (1 / (1 + Math.pow(10, pH - pKa.R)));
-            charge += counts['H'] * (1 / (1 + Math.pow(10, pH - pKa.H)));
-            // Negative side chains
-            charge -= counts['D'] * (1 / (1 + Math.pow(10, pKa.D - pH)));
-            charge -= counts['E'] * (1 / (1 + Math.pow(10, pKa.E - pH)));
-            charge -= counts['C'] * (1 / (1 + Math.pow(10, pKa.C - pH)));
-            charge -= counts['Y'] * (1 / (1 + Math.pow(10, pKa.Y - pH)));
-            return charge;
-        }
-        
-        function calculatePI(counts) {
-            let pH = 0.0;
-            let minChargeDiff = Number.MAX_VALUE;
-            let bestPH = 0.0;
-            
-            // Iterative search for pI
-            while (pH <= 14.0) {
-                const charge = calculateNetCharge(pH, counts);
-                if (Math.abs(charge) < minChargeDiff) {
-                    minChargeDiff = Math.abs(charge);
-                    bestPH = pH;
+                function calculateAminoAcidComposition(sequence) {
+                    const counts = {};
+                    for (const code in aminoAcids) {
+                        counts[code] = 0;
+                    }
+                    for (const aa of sequence) {
+                        if (counts.hasOwnProperty(aa)) {
+                            counts[aa]++;
+                        }
+                    }
+                    return counts;
                 }
-                pH += 0.01; // Step can be adjusted for precision/performance
-            }
-            return bestPH;
-        }
 
-        // --- UI UPDATE FUNCTIONS ---
-        
-        function updateCompositionTable(counts, total) {
-            compositionTable.innerHTML = '';
-            const sortedAcids = Object.keys(aminoAcids).sort();
+                function calculateMolecularWeight(counts) {
+                    let totalWeight = 0;
+                    for (const aa in counts) {
+                        totalWeight += counts[aa] * aminoAcids[aa].weight;
+                    }
+                    // A simpler way is Sum(AA_residue_weights) + H2O_weight
+                    // The weights in the 'aminoAcids' object are for the full amino acids, not residues.
+                    // When forming a peptide bond, one water molecule is lost.
+                    const peptideBonds = Math.max(
+                        0,
+                        Object.values(counts).reduce((a, b) => a + b, 0) - 1
+                    );
 
-            for (const code of sortedAcids) {
-                const count = counts[code];
-                const percentage = total > 0 ? (count / total * 100).toFixed(2) : 0;
-                const row = `
+                    // If the sequence is not empty, we should add back one water molecule for the termini
+                    if (
+                        peptideBonds >= 0 &&
+                        Object.values(counts).reduce((a, b) => a + b, 0) > 0
+                    ) {
+                        totalWeight += waterWeight;
+                    }
+
+                    return totalWeight > 0 ? totalWeight : 0;
+                }
+
+                function calculateExtinctionCoefficient(counts) {
+                    const nW = counts['W'];
+                    const nY = counts['Y'];
+                    const nC = counts['C'];
+
+                    const reduced =
+                        nW * extinctionCoefficients['W'] +
+                        nY * extinctionCoefficients['Y'];
+                    const oxidized =
+                        reduced +
+                        Math.floor(nC / 2) * extinctionCoefficients['C'];
+
+                    return { reduced, oxidized };
+                }
+
+                function calculateNetCharge(pH, counts) {
+                    let charge = 0;
+                    // N-terminus
+                    charge += 1 / (1 + Math.pow(10, pH - pKa.N_term));
+                    // C-terminus
+                    charge -= 1 / (1 + Math.pow(10, pKa.C_term - pH));
+                    // Positive side chains
+                    charge +=
+                        counts['K'] * (1 / (1 + Math.pow(10, pH - pKa.K)));
+                    charge +=
+                        counts['R'] * (1 / (1 + Math.pow(10, pH - pKa.R)));
+                    charge +=
+                        counts['H'] * (1 / (1 + Math.pow(10, pH - pKa.H)));
+                    // Negative side chains
+                    charge -=
+                        counts['D'] * (1 / (1 + Math.pow(10, pKa.D - pH)));
+                    charge -=
+                        counts['E'] * (1 / (1 + Math.pow(10, pKa.E - pH)));
+                    charge -=
+                        counts['C'] * (1 / (1 + Math.pow(10, pKa.C - pH)));
+                    charge -=
+                        counts['Y'] * (1 / (1 + Math.pow(10, pKa.Y - pH)));
+                    return charge;
+                }
+
+                function calculatePI(counts) {
+                    let pH = 0.0;
+                    let minChargeDiff = Number.MAX_VALUE;
+                    let bestPH = 0.0;
+
+                    // Iterative search for pI
+                    while (pH <= 14.0) {
+                        const charge = calculateNetCharge(pH, counts);
+                        if (Math.abs(charge) < minChargeDiff) {
+                            minChargeDiff = Math.abs(charge);
+                            bestPH = pH;
+                        }
+                        pH += 0.01; // Step can be adjusted for precision/performance
+                    }
+                    return bestPH;
+                }
+
+                // --- UI UPDATE FUNCTIONS ---
+
+                function updateCompositionTable(counts, total) {
+                    compositionTable.innerHTML = '';
+                    const sortedAcids = Object.keys(aminoAcids).sort();
+
+                    for (const code of sortedAcids) {
+                        const count = counts[code];
+                        const percentage =
+                            total > 0 ? ((count / total) * 100).toFixed(2) : 0;
+                        const row = `
                     <tr class="${count > 0 ? 'font-medium' : 'text-slate-400'}">
                         <td class="px-4 py-3 whitespace-nowrap">${aminoAcids[code].name} (${code})</td>
                         <td class="px-4 py-3 whitespace-nowrap">${count}</td>
                         <td class="px-4 py-3 whitespace-nowrap">${percentage}%</td>
                     </tr>
                 `;
-                compositionTable.innerHTML += row;
-            }
-        }
-        
-        function showMessage(text, type = 'info') {
-            const color = type === 'error' ? 'text-red-600' : 'text-slate-600';
-            messageArea.innerHTML = `<p class="${color} p-2 rounded-md">${text}</p>`;
-        }
+                        compositionTable.innerHTML += row;
+                    }
+                }
 
-        function showResults() {
-             document.querySelectorAll('.result-card').forEach((card, index) => {
-                setTimeout(() => {
-                    card.classList.add('visible');
-                }, index * 100); // Stagger the animation
+                function showMessage(text, type = 'info') {
+                    const color =
+                        type === 'error' ? 'text-red-600' : 'text-slate-600';
+                    messageArea.innerHTML = `<p class="${color} p-2 rounded-md">${text}</p>`;
+                }
+
+                function showResults() {
+                    document
+                        .querySelectorAll('.result-card')
+                        .forEach((card, index) => {
+                            setTimeout(() => {
+                                card.classList.add('visible');
+                            }, index * 100); // Stagger the animation
+                        });
+                }
+
+                function hideResults() {
+                    document
+                        .querySelectorAll('.result-card')
+                        .forEach((card) => {
+                            card.classList.remove('visible');
+                        });
+                }
             });
-        }
-        
-        function hideResults() {
-            document.querySelectorAll('.result-card').forEach(card => {
-                card.classList.remove('visible');
-            });
-        }
-    });
-    </script>
-</body>
+        </script>
+    </body>
 </html>
-
