@@ -1,0 +1,982 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Codon Optimization Tool</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.3);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5em;
+            margin-bottom: 10px;
+        }
+
+        .subtitle {
+            font-size: 1.1em;
+            opacity: 0.9;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 30px;
+            padding: 30px;
+        }
+
+        .panel {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+        }
+
+        .panel h2 {
+            color: #667eea;
+            margin-bottom: 20px;
+            font-size: 1.5em;
+        }
+
+        .input-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            color: #333;
+        }
+
+        select, input, textarea {
+            width: 100%;
+            padding: 12px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        select:focus, input:focus, textarea:focus {
+            outline: none;
+            border-color: #667eea;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+            font-family: 'Courier New', monospace;
+        }
+
+        button {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: transform 0.2s, box-shadow 0.2s;
+            margin-right: 10px;
+            margin-bottom: 10px;
+        }
+
+        button:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(102, 126, 234, 0.4);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .sequence-display {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 15px;
+            font-family: 'Courier New', monospace;
+            min-height: 150px;
+            word-break: break-all;
+            line-height: 1.8;
+        }
+
+        .codon-wrapper {
+            display: inline-block;
+            margin: 2px;
+            position: relative;
+        }
+
+        .codon-select {
+            padding: 4px 6px;
+            border-radius: 4px;
+            border: 2px solid transparent;
+            font-family: 'Courier New', monospace;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            appearance: none;
+            -webkit-appearance: none;
+            -moz-appearance: none;
+            background-repeat: no-repeat;
+            background-position: right 4px center;
+            background-size: 8px;
+            padding-right: 16px;
+        }
+
+        .codon-select.rare {
+            background-color: #ffcdd2;
+            border-color: #f44336;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23f44336" height="8" viewBox="0 0 24 24" width="8" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+        }
+
+        .codon-select.common {
+            background-color: #fff9c4;
+            border-color: #ffc107;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23ffc107" height="8" viewBox="0 0 24 24" width="8" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+        }
+
+        .codon-select.optimal {
+            background-color: #c8e6c9;
+            border-color: #4caf50;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%234caf50" height="8" viewBox="0 0 24 24" width="8" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+        }
+
+        .codon-select:hover {
+            opacity: 0.9;
+            border-color: #667eea;
+            transform: scale(1.02);
+        }
+
+        .codon-select:focus {
+            outline: none;
+            border-color: #667eea;
+            box-shadow: 0 0 0 3px rgba(102, 126, 234, 0.2);
+        }
+
+        .codon-select option {
+            padding: 4px;
+            font-family: 'Courier New', monospace;
+        }
+
+        .codon-select option.rare {
+            background-color: #ffcdd2;
+        }
+
+        .codon-select option.common {
+            background-color: #fff9c4;
+        }
+
+        .codon-select option.optimal {
+            background-color: #c8e6c9;
+        }
+
+        .aa-label {
+            display: block;
+            font-size: 8px;
+            text-align: center;
+            color: #666;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-top: 20px;
+        }
+
+        .stat-card {
+            background: white;
+            padding: 15px;
+            border-radius: 10px;
+            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+        }
+
+        .stat-label {
+            font-size: 0.85em;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .stat-value {
+            font-size: 1.8em;
+            font-weight: bold;
+            color: #667eea;
+        }
+
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: #e0e0e0;
+            border-radius: 4px;
+            overflow: hidden;
+            margin-top: 10px;
+        }
+
+        .progress-fill {
+            height: 100%;
+            transition: width 0.3s, background-color 0.3s;
+        }
+
+        .warnings {
+            background: #fff3cd;
+            border: 2px solid #ffc107;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .warnings h3 {
+            color: #856404;
+            margin-bottom: 10px;
+            font-size: 1.1em;
+        }
+
+        .warning-item {
+            padding: 8px;
+            margin: 5px 0;
+            background: white;
+            border-radius: 4px;
+            font-size: 0.9em;
+        }
+
+        .info-box {
+            background: #e3f2fd;
+            border: 2px solid #2196f3;
+            border-radius: 8px;
+            padding: 15px;
+            margin-top: 20px;
+        }
+
+        .legend {
+            display: flex;
+            gap: 15px;
+            flex-wrap: wrap;
+            margin: 15px 0;
+            padding: 12px;
+            background: white;
+            border-radius: 8px;
+            font-size: 0.9em;
+        }
+
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        .legend-color {
+            width: 25px;
+            height: 18px;
+            border-radius: 3px;
+        }
+
+        .gc-chart {
+            margin-top: 20px;
+            padding: 15px;
+            background: white;
+            border-radius: 8px;
+        }
+
+        .chart-bar {
+            display: inline-block;
+            width: 3px;
+            margin: 0 1px;
+            vertical-align: bottom;
+            background: #667eea;
+            transition: all 0.2s;
+        }
+
+        .chart-bar:hover {
+            opacity: 0.7;
+        }
+
+        @media (max-width: 1024px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>🧬 Codon Optimization Tool</h1>
+            <p class="subtitle">Design optimal DNA sequences for flexible linkers with real-time analysis</p>
+        </header>
+
+        <div class="main-content">
+            <!-- Left Panel: Input -->
+            <div class="panel">
+                <h2>Sequence Design</h2>
+                
+                <div class="input-group">
+                    <label for="organism">Target Organism:</label>
+                    <select id="organism" onchange="updateAnalysis()">
+                        <option value="ecoli">E. coli</option>
+                        <option value="yeast">S. cerevisiae (Yeast)</option>
+                        <option value="human">Mammalian (Human)</option>
+                    </select>
+                </div>
+
+                <div class="input-group">
+                    <label for="amino-acids">Amino Acid Sequence:</label>
+                    <input type="text" id="amino-acids" placeholder="e.g., GGGSGGGSGGGS" value="GGGSGGGSGGGS" oninput="updateFromAminoAcids()">
+                </div>
+
+                <div class="input-group">
+                    <label>Quick Linker Generator:</label>
+                    <button onclick="generateLinker(3)">Generate (GGGS)₃</button>
+                    <button onclick="generateLinker(4)">Generate (GGGS)₄</button>
+                    <button onclick="generateLinker(5)">Generate (GGGS)₅</button>
+                </div>
+
+                <div class="input-group">
+                    <label for="dna-sequence">Or Paste DNA Sequence:</label>
+                    <textarea id="dna-sequence" placeholder="Enter DNA sequence to analyze..."></textarea>
+                    <button onclick="analyzeCustomSequence()" style="margin-top: 10px;">Analyze Sequence</button>
+                </div>
+
+                <div class="legend">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #c8e6c9; border: 1px solid #4caf50;"></div>
+                        <span>Optimal</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #fff9c4; border: 1px solid #ffc107;"></div>
+                        <span>Common</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background: #ffcdd2; border: 1px solid #f44336;"></div>
+                        <span>Rare</span>
+                    </div>
+                </div>
+
+                <div id="sequence-display" class="sequence-display">
+                    <p style="color: #999; text-align: center;">Enter a sequence or generate a linker to begin</p>
+                </div>
+
+                <button onclick="optimizeSequence()" style="margin-top: 15px;">Auto-Optimize</button>
+                <button onclick="copyToClipboard()" style="margin-top: 15px;">Copy DNA Sequence</button>
+            </div>
+
+            <!-- Right Panel: Statistics -->
+            <div class="panel">
+                <h2>Live Statistics</h2>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-label">GC Content</div>
+                        <div class="stat-value" id="gc-content">--</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="gc-progress" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">CAI Score</div>
+                        <div class="stat-value" id="cai-score">--</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" id="cai-progress" style="width: 0%;"></div>
+                        </div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Rare Codons</div>
+                        <div class="stat-value" id="rare-codons">--</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Optimal Codons</div>
+                        <div class="stat-value" id="optimal-codons">--</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Length (bp)</div>
+                        <div class="stat-value" id="sequence-length">--</div>
+                    </div>
+
+                    <div class="stat-card">
+                        <div class="stat-label">Self-Complementarity</div>
+                        <div class="stat-value" id="self-comp">--</div>
+                    </div>
+                </div>
+
+                <div class="gc-chart">
+                    <strong>GC Content Distribution (20 bp windows):</strong>
+                    <div id="gc-chart-bars" style="margin-top: 10px; min-height: 100px;">
+                        <p style="color: #999;">No data yet</p>
+                    </div>
+                </div>
+
+                <div id="warnings-container"></div>
+                
+                <div class="info-box" style="margin-top: 20px;">
+                    <h3 style="margin-bottom: 10px;">💡 Optimization Tips:</h3>
+                    <ul style="margin-left: 20px; line-height: 1.8; font-size: 0.9em;">
+                        <li><strong>Interactive Codons:</strong> Click any codon dropdown to manually select alternatives. Options show relative adaptiveness (%) for each choice.</li>
+                        <li><strong>GC Content:</strong> 
+                            <ul style="margin-left: 15px; margin-top: 5px;">
+                                <li>E. coli: 45-55%</li>
+                                <li>S. cerevisiae: 35-45% (AT-rich)</li>
+                                <li>Mammalian: 50-60%</li>
+                            </ul>
+                        </li>
+                        <li><strong>CAI:</strong> Higher is better (>0.8 is excellent)</li>
+                        <li><strong>Codon Categories:</strong> Based on relative adaptiveness within each amino acid
+                            <ul style="margin-left: 15px; margin-top: 5px;">
+                                <li>Optimal: >70% of max frequency</li>
+                                <li>Common: 30-70% of max frequency</li>
+                                <li>Rare: <30% of max frequency</li>
+                            </ul>
+                        </li>
+                        <li><strong>Avoid:</strong> Rare codons, restriction sites, and long repeats</li>
+                        <li><strong>Structure:</strong> Minimize self-complementarity (<8 bp)</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Genetic code
+        const geneticCode = {
+            'F': ['TTT', 'TTC'],
+            'L': ['TTA', 'TTG', 'CTT', 'CTC', 'CTA', 'CTG'],
+            'I': ['ATT', 'ATC', 'ATA'],
+            'M': ['ATG'],
+            'V': ['GTT', 'GTC', 'GTA', 'GTG'],
+            'S': ['TCT', 'TCC', 'TCA', 'TCG', 'AGT', 'AGC'],
+            'P': ['CCT', 'CCC', 'CCA', 'CCG'],
+            'T': ['ACT', 'ACC', 'ACA', 'ACG'],
+            'A': ['GCT', 'GCC', 'GCA', 'GCG'],
+            'Y': ['TAT', 'TAC'],
+            'H': ['CAT', 'CAC'],
+            'Q': ['CAA', 'CAG'],
+            'N': ['AAT', 'AAC'],
+            'K': ['AAA', 'AAG'],
+            'D': ['GAT', 'GAC'],
+            'E': ['GAA', 'GAG'],
+            'C': ['TGT', 'TGC'],
+            'W': ['TGG'],
+            'R': ['CGT', 'CGC', 'CGA', 'CGG', 'AGA', 'AGG'],
+            'G': ['GGT', 'GGC', 'GGA', 'GGG'],
+            '*': ['TAA', 'TAG', 'TGA']
+        };
+
+        // E. coli codon usage (per 1000)
+        const ecoliFreq = {
+            'TTT': 21.8, 'TTC': 16.4, 'TTA': 13.0, 'TTG': 12.8,
+            'CTT': 10.7, 'CTC': 10.5, 'CTA': 3.7, 'CTG': 52.4,
+            'ATT': 29.8, 'ATC': 24.9, 'ATA': 4.5, 'ATG': 27.4,
+            'GTT': 18.4, 'GTC': 15.2, 'GTA': 11.5, 'GTG': 25.6,
+            'TCT': 8.6, 'TCC': 8.8, 'TCA': 7.2, 'TCG': 8.6, 'AGT': 9.0, 'AGC': 16.1,
+            'CCT': 7.0, 'CCC': 5.5, 'CCA': 8.5, 'CCG': 23.3,
+            'ACT': 8.8, 'ACC': 23.1, 'ACA': 7.3, 'ACG': 14.2,
+            'GCT': 15.5, 'GCC': 25.5, 'GCA': 20.8, 'GCG': 33.3,
+            'TAT': 16.3, 'TAC': 12.2, 'CAT': 13.1, 'CAC': 9.7,
+            'CAA': 15.3, 'CAG': 29.3, 'AAT': 18.5, 'AAC': 21.8,
+            'AAA': 33.7, 'AAG': 10.3, 'GAT': 32.8, 'GAC': 19.3,
+            'GAA': 39.7, 'GAG': 18.3, 'TGT': 5.2, 'TGC': 6.3,
+            'TGG': 15.2, 'CGT': 21.3, 'CGC': 21.6, 'CGA': 3.6,
+            'CGG': 5.6, 'AGA': 2.1, 'AGG': 1.2, 'GGT': 24.8,
+            'GGC': 28.8, 'GGA': 8.6, 'GGG': 10.9
+        };
+
+        // Human codon usage (per 1000)
+        const humanFreq = {
+            'TTT': 17.6, 'TTC': 20.3, 'TTA': 7.7, 'TTG': 12.9,
+            'CTT': 13.2, 'CTC': 19.6, 'CTA': 7.2, 'CTG': 39.6,
+            'ATT': 16.0, 'ATC': 20.8, 'ATA': 7.5, 'ATG': 22.0,
+            'GTT': 11.0, 'GTC': 14.5, 'GTA': 7.1, 'GTG': 28.1,
+            'TCT': 15.2, 'TCC': 17.7, 'TCA': 12.2, 'TCG': 4.4, 'AGT': 12.1, 'AGC': 19.5,
+            'CCT': 17.5, 'CCC': 19.8, 'CCA': 16.9, 'CCG': 6.9,
+            'ACT': 13.1, 'ACC': 18.9, 'ACA': 15.1, 'ACG': 6.1,
+            'GCT': 18.4, 'GCC': 27.7, 'GCA': 15.8, 'GCG': 7.4,
+            'TAT': 12.2, 'TAC': 15.3, 'CAT': 10.9, 'CAC': 15.1,
+            'CAA': 12.3, 'CAG': 34.2, 'AAT': 17.0, 'AAC': 19.1,
+            'AAA': 24.4, 'AAG': 31.9, 'GAT': 21.8, 'GAC': 25.1,
+            'GAA': 29.0, 'GAG': 39.6, 'TGT': 10.6, 'TGC': 12.6,
+            'TGG': 13.2, 'CGT': 4.5, 'CGC': 10.4, 'CGA': 6.2,
+            'CGG': 11.4, 'AGA': 12.2, 'AGG': 12.0, 'GGT': 10.8,
+            'GGC': 22.2, 'GGA': 16.5, 'GGG': 16.5
+        };
+
+        // S. cerevisiae (yeast) codon usage (per 1000)
+        // Based on highly expressed genes from Kazusa database
+        const yeastFreq = {
+            'TTT': 26.1, 'TTC': 18.4, 'TTA': 26.2, 'TTG': 27.2,
+            'CTT': 12.3, 'CTC': 5.4, 'CTA': 13.4, 'CTG': 10.5,
+            'ATT': 30.1, 'ATC': 17.2, 'ATA': 17.8, 'ATG': 20.9,
+            'GTT': 22.1, 'GTC': 11.8, 'GTA': 12.0, 'GTG': 10.8,
+            'TCT': 23.4, 'TCC': 14.2, 'TCA': 18.7, 'TCG': 8.6, 'AGT': 14.2, 'AGC': 9.8,
+            'CCT': 13.5, 'CCC': 6.8, 'CCA': 18.3, 'CCG': 5.3,
+            'ACT': 20.3, 'ACC': 12.7, 'ACA': 17.8, 'ACG': 8.0,
+            'GCT': 21.2, 'GCC': 12.6, 'GCA': 16.2, 'GCG': 6.2,
+            'TAT': 18.8, 'TAC': 14.8, 'CAT': 13.6, 'CAC': 7.8,
+            'CAA': 27.3, 'CAG': 12.1, 'AAT': 35.7, 'AAC': 24.8,
+            'AAA': 41.9, 'AAG': 30.8, 'GAT': 37.6, 'GAC': 20.2,
+            'GAA': 45.6, 'GAG': 19.2, 'TGT': 8.1, 'TGC': 4.8,
+            'TGG': 10.4, 'CGT': 6.4, 'CGC': 2.6, 'CGA': 3.0,
+            'CGG': 1.7, 'AGA': 21.3, 'AGG': 9.2, 'GGT': 23.9,
+            'GGC': 9.8, 'GGA': 10.9, 'GGG': 6.0
+        };
+
+        const restrictionSites = {
+            'EcoRI': 'GAATTC',
+            'BamHI': 'GGATCC',
+            'HindIII': 'AAGCTT',
+            'PstI': 'CTGCAG',
+            'SalI': 'GTCGAC',
+            'XbaI': 'TCTAGA',
+            'NotI': 'GCGGCCGC',
+            'XhoI': 'CTCGAG',
+            'NdeI': 'CATATG',
+            'NcoI': 'CCATGG'
+        };
+
+        let currentSequence = '';
+        let currentCodons = [];
+
+        function getFreqTable() {
+            const organism = document.getElementById('organism').value;
+            if (organism === 'yeast') return yeastFreq;
+            if (organism === 'human') return humanFreq;
+            return ecoliFreq;
+        }
+
+        function calculateGC(seq) {
+            const gc = (seq.match(/[GC]/gi) || []).length;
+            return (gc / seq.length) * 100;
+        }
+
+        function getCodonCategory(codon) {
+            const freqTable = getFreqTable();
+            const freq = freqTable[codon] || 0;
+            
+            // Find which amino acid this codon encodes
+            let aminoAcid = null;
+            for (const [aa, codonList] of Object.entries(geneticCode)) {
+                if (codonList.includes(codon)) {
+                    aminoAcid = aa;
+                    break;
+                }
+            }
+            
+            if (!aminoAcid || aminoAcid === '*') return 'common';
+            
+            // Find max frequency for this amino acid
+            const synonymousCodons = geneticCode[aminoAcid];
+            const maxFreq = Math.max(...synonymousCodons.map(c => freqTable[c] || 0));
+            
+            if (maxFreq === 0) return 'common';
+            
+            // Calculate relative adaptiveness (w value)
+            const relativeAdaptiveness = freq / maxFreq;
+            
+            // Classify based on relative adaptiveness
+            if (relativeAdaptiveness < 0.3) return 'rare';
+            if (relativeAdaptiveness > 0.7) return 'optimal';
+            return 'common';
+        }
+
+        function calculateCAI(codons) {
+            const freqTable = getFreqTable();
+            const aaMaxFreq = {};
+            
+            for (const [aa, codonList] of Object.entries(geneticCode)) {
+                if (aa !== '*') {
+                    aaMaxFreq[aa] = Math.max(...codonList.map(c => freqTable[c] || 0));
+                }
+            }
+
+            let wValues = [];
+            for (const codon of codons) {
+                for (const [aa, codonList] of Object.entries(geneticCode)) {
+                    if (codonList.includes(codon) && aa !== '*') {
+                        const w = (freqTable[codon] || 0) / (aaMaxFreq[aa] || 1);
+                        wValues.push(w || 0.001);
+                        break;
+                    }
+                }
+            }
+
+            if (wValues.length === 0) return 0;
+            const logSum = wValues.reduce((sum, w) => sum + Math.log(w), 0);
+            return Math.exp(logSum / wValues.length);
+        }
+
+        function calculateSelfComp(seq) {
+            const complement = {'A': 'T', 'T': 'A', 'G': 'C', 'C': 'G'};
+            const revComp = seq.split('').reverse().map(b => complement[b] || 'N').join('');
+            
+            let maxMatch = 0;
+            for (let i = 0; i < seq.length - 4; i++) {
+                for (let j = 0; j < revComp.length - 4; j++) {
+                    let match = 0;
+                    let k = 0;
+                    while (i + k < seq.length && j + k < revComp.length && seq[i + k] === revComp[j + k]) {
+                        match++;
+                        k++;
+                    }
+                    maxMatch = Math.max(maxMatch, match);
+                }
+            }
+            return maxMatch;
+        }
+
+        function findRestrictionSites(seq) {
+            const found = [];
+            for (const [enzyme, site] of Object.entries(restrictionSites)) {
+                if (seq.includes(site)) {
+                    found.push(enzyme);
+                }
+            }
+            return found;
+        }
+
+        function generateLinker(n) {
+            const aaSeq = 'GGGS'.repeat(n);
+            document.getElementById('amino-acids').value = aaSeq;
+            generateOptimizedSequence(aaSeq);
+        }
+
+        function generateOptimizedSequence(aaSeq) {
+            const freqTable = getFreqTable();
+            let codons = [];
+            
+            for (const aa of aaSeq) {
+                const available = geneticCode[aa] || [];
+                if (available.length === 0) continue;
+                
+                // Score codons
+                let scored = available.map(codon => {
+                    let score = freqTable[codon] || 0;
+                    const gc = calculateGC(codon);
+                    // Prefer moderate GC
+                    const gcPenalty = Math.abs(gc - 50) / 50;
+                    score *= (1 - gcPenalty * 0.3);
+                    return {codon, score};
+                });
+                
+                scored.sort((a, b) => b.score - a.score);
+                codons.push(scored[0].codon);
+            }
+            
+            displaySequence(codons);
+            analyzeSequence(codons.join(''));
+        }
+
+        function updateFromAminoAcids() {
+            const aaSeq = document.getElementById('amino-acids').value.toUpperCase();
+            generateOptimizedSequence(aaSeq);
+        }
+
+        function analyzeCustomSequence() {
+            const seq = document.getElementById('dna-sequence').value.replace(/\s/g, '').toUpperCase();
+            if (!seq || seq.length % 3 !== 0) {
+                alert('Please enter a valid DNA sequence (length must be multiple of 3)');
+                return;
+            }
+            
+            const codons = [];
+            for (let i = 0; i < seq.length; i += 3) {
+                codons.push(seq.substr(i, 3));
+            }
+            
+            displaySequence(codons);
+            analyzeSequence(seq);
+        }
+
+        function displaySequence(codons) {
+            currentCodons = codons;
+            currentSequence = codons.join('');
+            
+            const display = document.getElementById('sequence-display');
+            display.innerHTML = '';
+            
+            // Translate codons to amino acids
+            const aminoAcids = codons.map(codon => {
+                for (const [aa, codonList] of Object.entries(geneticCode)) {
+                    if (codonList.includes(codon)) {
+                        return aa;
+                    }
+                }
+                return '?';
+            });
+            
+            codons.forEach((codon, i) => {
+                const aa = aminoAcids[i];
+                
+                // Create wrapper div
+                const wrapper = document.createElement('div');
+                wrapper.className = 'codon-wrapper';
+                
+                // Add amino acid label
+                const aaLabel = document.createElement('span');
+                aaLabel.className = 'aa-label';
+                aaLabel.textContent = aa;
+                wrapper.appendChild(aaLabel);
+                
+                // Create select element
+                const select = document.createElement('select');
+                select.className = 'codon-select';
+                select.dataset.position = i;
+                
+                // Get all synonymous codons for this amino acid
+                const synonymousCodons = geneticCode[aa] || [];
+                const freqTable = getFreqTable();
+                
+                // Sort codons by frequency (optimal first)
+                const sortedCodons = [...synonymousCodons].sort((a, b) => {
+                    return (freqTable[b] || 0) - (freqTable[a] || 0);
+                });
+                
+                // Add options
+                sortedCodons.forEach(codonOption => {
+                    const option = document.createElement('option');
+                    option.value = codonOption;
+                    option.textContent = codonOption;
+                    option.className = getCodonCategory(codonOption);
+                    
+                    // Add frequency info to option text
+                    const freq = freqTable[codonOption] || 0;
+                    const maxFreq = Math.max(...synonymousCodons.map(c => freqTable[c] || 0));
+                    const relAdapt = maxFreq > 0 ? Math.round((freq / maxFreq) * 100) : 0;
+                    option.textContent = `${codonOption} (${relAdapt}%)`;
+                    
+                    if (codonOption === codon) {
+                        option.selected = true;
+                    }
+                    
+                    select.appendChild(option);
+                });
+                
+                // Set initial category styling
+                select.className = 'codon-select ' + getCodonCategory(codon);
+                
+                // Add change event listener
+                select.addEventListener('change', function() {
+                    const newCodon = this.value;
+                    this.className = 'codon-select ' + getCodonCategory(newCodon);
+                    onCodonChange();
+                });
+                
+                wrapper.appendChild(select);
+                display.appendChild(wrapper);
+                
+                // Add space every 4 codons for readability
+                if ((i + 1) % 4 === 0) {
+                    display.appendChild(document.createElement('br'));
+                }
+            });
+        }
+
+        function onCodonChange() {
+            // Collect all selected codons from dropdowns
+            const selects = document.querySelectorAll('.codon-select');
+            const newCodons = Array.from(selects).map(s => s.value);
+            const newSequence = newCodons.join('');
+            
+            currentCodons = newCodons;
+            currentSequence = newSequence;
+            
+            // Re-analyze sequence with new codon choices
+            analyzeSequence(newSequence);
+        }
+
+        function analyzeSequence(seq) {
+            currentSequence = seq;
+            const codons = [];
+            for (let i = 0; i < seq.length; i += 3) {
+                codons.push(seq.substr(i, 3));
+            }
+            
+            // Calculate stats
+            const gc = calculateGC(seq);
+            const cai = calculateCAI(codons);
+            
+            let rareCount = 0, optimalCount = 0;
+            codons.forEach(codon => {
+                const cat = getCodonCategory(codon);
+                if (cat === 'rare') rareCount++;
+                if (cat === 'optimal') optimalCount++;
+            });
+            
+            const selfComp = calculateSelfComp(seq);
+            const resSites = findRestrictionSites(seq);
+            
+            // GC windows
+            const windowSize = 20;
+            const gcWindows = [];
+            for (let i = 0; i <= seq.length - windowSize; i++) {
+                gcWindows.push(calculateGC(seq.substr(i, windowSize)));
+            }
+            
+            // Update display
+            document.getElementById('gc-content').textContent = gc.toFixed(1) + '%';
+            document.getElementById('cai-score').textContent = cai.toFixed(3);
+            document.getElementById('rare-codons').textContent = rareCount;
+            document.getElementById('optimal-codons').textContent = optimalCount;
+            document.getElementById('sequence-length').textContent = seq.length;
+            document.getElementById('self-comp').textContent = selfComp + ' bp';
+            
+            // Progress bars
+            const organism = document.getElementById('organism').value;
+            let gcMin, gcMax, gcIdealMin, gcIdealMax;
+            if (organism === 'ecoli') {
+                gcMin = 40; gcMax = 60; gcIdealMin = 45; gcIdealMax = 55;
+            } else if (organism === 'yeast') {
+                gcMin = 30; gcMax = 50; gcIdealMin = 35; gcIdealMax = 45;
+            } else { // human
+                gcMin = 45; gcMax = 65; gcIdealMin = 50; gcIdealMax = 60;
+            }
+            
+            const gcProg = document.getElementById('gc-progress');
+            gcProg.style.width = gc + '%';
+            if (gc >= gcIdealMin && gc <= gcIdealMax) {
+                gcProg.style.background = '#4caf50';
+            } else if (gc >= gcMin && gc <= gcMax) {
+                gcProg.style.background = '#ff9800';
+            } else {
+                gcProg.style.background = '#f44336';
+            }
+            
+            const caiProg = document.getElementById('cai-progress');
+            caiProg.style.width = (cai * 100) + '%';
+            caiProg.style.background = (cai >= 0.8) ? '#4caf50' : (cai >= 0.6) ? '#ff9800' : '#f44336';
+            
+            // GC chart
+            const chartDiv = document.getElementById('gc-chart-bars');
+            chartDiv.innerHTML = '';
+            gcWindows.forEach(gcVal => {
+                const bar = document.createElement('div');
+                bar.className = 'chart-bar';
+                bar.style.height = gcVal + 'px';
+                
+                // Use same thresholds as progress bar
+                if (gcVal >= gcIdealMin && gcVal <= gcIdealMax) {
+                    bar.style.background = '#4caf50';
+                } else if (gcVal >= gcMin && gcVal <= gcMax) {
+                    bar.style.background = '#ff9800';
+                } else {
+                    bar.style.background = '#f44336';
+                }
+                
+                bar.title = gcVal.toFixed(1) + '%';
+                chartDiv.appendChild(bar);
+            });
+            
+            // Warnings
+            displayWarnings(gc, cai, rareCount, codons.length, selfComp, resSites);
+        }
+
+        function displayWarnings(gc, cai, rareCount, totalCodons, selfComp, resSites) {
+            const warnings = [];
+            const organism = document.getElementById('organism').value;
+            
+            // Organism-specific GC thresholds
+            let gcMin, gcMax;
+            if (organism === 'ecoli') {
+                gcMin = 40; gcMax = 60;
+            } else if (organism === 'yeast') {
+                gcMin = 30; gcMax = 50;
+            } else { // human
+                gcMin = 45; gcMax = 65;
+            }
+            
+            if (gc < gcMin || gc > gcMax) {
+                warnings.push(`⚠️ GC content outside optimal range (${gcMin}-${gcMax}%)`);
+            }
+            if (cai < 0.6) {
+                warnings.push('⚠️ Low CAI score - consider using more optimal codons');
+            }
+            if (rareCount > totalCodons * 0.1) {
+                warnings.push('⚠️ High proportion of rare codons detected');
+            }
+            if (selfComp > 8) {
+                warnings.push('⚠️ High self-complementarity may cause secondary structures');
+            }
+            if (resSites.length > 0) {
+                warnings.push(`⚠️ Restriction sites found: ${resSites.join(', ')}`);
+            }
+            
+            const container = document.getElementById('warnings-container');
+            if (warnings.length > 0) {
+                container.innerHTML = `
+                    <div class="warnings">
+                        <h3>Warnings</h3>
+                        ${warnings.map(w => `<div class="warning-item">${w}</div>`).join('')}
+                    </div>
+                `;
+            } else {
+                container.innerHTML = `
+                    <div class="info-box">
+                        <h3>✓ Sequence looks good!</h3>
+                        <p style="margin-top: 8px;">No major issues detected.</p>
+                    </div>
+                `;
+            }
+        }
+
+        function optimizeSequence() {
+            const aaSeq = document.getElementById('amino-acids').value.toUpperCase();
+            if (!aaSeq) {
+                alert('Please enter an amino acid sequence first');
+                return;
+            }
+            generateOptimizedSequence(aaSeq);
+        }
+
+        function copyToClipboard() {
+            if (!currentSequence) {
+                alert('No sequence to copy');
+                return;
+            }
+            navigator.clipboard.writeText(currentSequence).then(() => {
+                alert('Sequence copied to clipboard!');
+            });
+        }
+
+        function updateAnalysis() {
+            if (currentCodons.length > 0) {
+                analyzeSequence(currentSequence);
+            }
+        }
+
+        // Initialize
+        window.onload = () => generateLinker(3);
+    </script>
+</body>
+</html>
