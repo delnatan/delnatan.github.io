@@ -80,6 +80,10 @@
 							/>
 						</div>
 						<button
+							id="toggle-mode-btn"
+							class="px-4 py-2 bg-indigo-100 hover:bg-indigo-200 rounded-md text-sm font-semibold text-indigo-700 transition-colors"
+						>Show dRFU</button>
+						<button
 							id="toggle-menu-btn"
 							class="flex items-center gap-2 px-4 py-2 bg-slate-100 hover:bg-slate-200 rounded-md text-sm font-semibold text-slate-700 transition-colors"
 						>
@@ -165,6 +169,7 @@
 			const selectAllBtn = document.getElementById('selectAllBtn');
 			const deselectAllBtn = document.getElementById('deselectAllBtn');
 			const searchInput = document.getElementById('search-input');
+			const toggleModeBtn = document.getElementById('toggle-mode-btn');
 			const toggleMenuBtn = document.getElementById('toggle-menu-btn');
 			const selectionPanel = document.getElementById('selection-panel');
 			const conditionsPlaceholder = document.getElementById(
@@ -175,6 +180,7 @@
 			// === GLOBAL STATE ===
 			let meltChart = null;
 			let parsedData = [];
+			let showDerivative = false;
 			const CHART_COLORS = [
 				'#4f46e5',
 				'#db2777',
@@ -212,11 +218,19 @@
 					selectionPanel.classList.toggle('open');
 					toggleMenuBtn.classList.toggle('menu-open');
 				});
+				toggleModeBtn.addEventListener('click', () => {
+					showDerivative = !showDerivative;
+					toggleModeBtn.textContent = showDerivative ? 'Show RFU' : 'Show dRFU';
+					if (meltChart) {
+						meltChart.options.scales.y.title.text = showDerivative ? 'dRFU' : 'RFU';
+						updateChartDatasets();
+					}
+				});
 
 				// Load initial data
 				try {
 					const response = await fetch(
-						'250923_Sun2-335-717_buffer_screen_dRFU_long.csv'
+						'sample_Results_FRET_widefmt.csv'
 					);
 					if (!response.ok)
 						throw new Error(`HTTP error! status: ${response.status}`);
@@ -246,15 +260,34 @@
 			function processCSV(csvText) {
 				try {
 					const lines = csvText.trim().split(/\r?\n/);
-					const headers = lines[0].split(',').slice(1).map(Number);
+					const headers = lines[0].split(',').slice(3).map(Number);
 
 					parsedData = lines.slice(1).map((line, originalIndex) => {
 						const values = line.split(',');
-						const condition = values[0];
-						const points = values
-							.slice(1)
-							.map((val, index) => ({ x: headers[index], y: parseFloat(val) }));
-						return { condition, data: points, originalIndex };
+						const well = values[0];
+						const buffer = values[1];
+						const ph = values[2];
+						const rfuValues = values.slice(3).map(parseFloat);
+
+						const rfuPoints = rfuValues.map((y, i) => ({ x: headers[i], y }));
+
+						// Central differences for interior; forward/backward at edges
+						const drfuPoints = rfuValues.map((_, i) => {
+							let dy, dx;
+							if (i === 0) {
+								dy = rfuValues[1] - rfuValues[0];
+								dx = headers[1] - headers[0];
+							} else if (i === rfuValues.length - 1) {
+								dy = rfuValues[i] - rfuValues[i - 1];
+								dx = headers[i] - headers[i - 1];
+							} else {
+								dy = rfuValues[i + 1] - rfuValues[i - 1];
+								dx = headers[i + 1] - headers[i - 1];
+							}
+							return { x: headers[i], y: dy / dx };
+						});
+
+						return { well, buffer, ph, condition: `${well} - ${buffer} pH ${ph}`, rfuData: rfuPoints, drfuData: drfuPoints, originalIndex };
 					});
 
 					populateConditionsList();
@@ -337,7 +370,7 @@
 							y: {
 								title: {
 									display: true,
-									text: 'dRFU',
+									text: 'RFU',
 									font: { size: 14, weight: '500' },
 									color: '#475569'
 								},
@@ -387,7 +420,7 @@
 					if (item) {
 						selectedDatasets.push({
 							label: item.condition,
-							data: item.data,
+							data: showDerivative ? item.drfuData : item.rfuData,
 							borderColor: CHART_COLORS[dataIndex % CHART_COLORS.length],
 							backgroundColor:
 								CHART_COLORS[dataIndex % CHART_COLORS.length] + '33',
