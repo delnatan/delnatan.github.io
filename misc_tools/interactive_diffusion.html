@@ -1,119 +1,543 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Diffusion Coefficient Calculator</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script type="text/javascript" id="MathJax-script" async
-    src="https://cdnjs.cloudflare.com/ajax/libs/mathjax/3.1.3/es5/tex-mml-chtml.js">
-  </script>
-  <style>
-    .MathJax {
-      z-index: 101 !important;
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Diffusion in Glycerol Solutions</title>
+<style>
+  :root {
+    color-scheme: light;
+    --bg: #f4f4f2;
+    --surface-1: #fcfcfb;
+    --surface-2: #f0efec;
+    --border: #e1e0dc;
+    --text-primary: #0b0b0b;
+    --text-secondary: #52514e;
+    --text-muted: #7a7974;
+    --accent: #2a78d6;
+    --accent-soft: #e3eefb;
+    --series-1: #2a78d6;
+    --series-2: #eb6834;
+    --grid: #e6e5e1;
+    --warn-bg: #fdf3dc;
+    --warn-text: #7a5200;
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      color-scheme: dark;
+      --bg: #121211;
+      --surface-1: #1a1a19;
+      --surface-2: #232321;
+      --border: #33332f;
+      --text-primary: #f0efec;
+      --text-secondary: #c3c2b7;
+      --text-muted: #8e8d86;
+      --accent: #3987e5;
+      --accent-soft: #1d2b3d;
+      --series-1: #3987e5;
+      --series-2: #d95926;
+      --grid: #2c2c29;
+      --warn-bg: #3a2e12;
+      --warn-text: #f2cf7e;
     }
-  </style>
+  }
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text-primary);
+    font: 15px/1.45 -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+  main { max-width: 1120px; margin: 0 auto; padding: 32px 20px 64px; }
+  h1 { font-size: 26px; margin: 0 0 4px; letter-spacing: -0.01em; }
+  .lede { color: var(--text-secondary); margin: 0 0 24px; max-width: 760px; }
+  .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+  @media (max-width: 860px) { .grid { grid-template-columns: 1fr; } }
+  .card {
+    background: var(--surface-1); border: 1px solid var(--border);
+    border-radius: 12px; padding: 20px;
+  }
+  .card h2 {
+    font-size: 13px; text-transform: uppercase; letter-spacing: 0.06em;
+    color: var(--text-secondary); margin: 0 0 16px; font-weight: 600;
+  }
+  .span-2 { grid-column: 1 / -1; }
+
+  .field { margin-bottom: 14px; }
+  .field label { display: block; font-size: 13px; color: var(--text-secondary); margin-bottom: 4px; }
+  .row { display: flex; gap: 10px; align-items: center; }
+  .inp {
+    display: flex; align-items: stretch; border: 1px solid var(--border);
+    border-radius: 8px; background: var(--surface-1); overflow: hidden; flex: 1;
+    transition: border-color .15s, box-shadow .15s;
+  }
+  .inp:focus-within { border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-soft); }
+  .inp input, .inp select {
+    border: 0; background: transparent; color: var(--text-primary);
+    font: inherit; padding: 8px 10px; width: 100%; min-width: 0; outline: none;
+    font-variant-numeric: tabular-nums;
+  }
+  .inp .unit {
+    padding: 8px 10px; color: var(--text-muted); background: var(--surface-2);
+    border-left: 1px solid var(--border); white-space: nowrap; font-size: 13px;
+    display: flex; align-items: center;
+  }
+  input[type=range] { width: 100%; accent-color: var(--accent); }
+
+  /* linked solvent block */
+  .linked { border: 1px solid var(--border); border-radius: 10px; padding: 14px; background: var(--surface-2); }
+  .linked .hint { font-size: 12.5px; color: var(--text-muted); margin: 0 0 12px; }
+  .linked .field { position: relative; }
+  .linked .field.driver .inp { border-color: var(--accent); }
+  .badge {
+    font-size: 11px; font-weight: 600; color: var(--accent); margin-left: 6px;
+    visibility: hidden; text-transform: uppercase; letter-spacing: 0.04em;
+  }
+  .driver .badge { visibility: visible; }
+
+  .seg { display: inline-flex; border: 1px solid var(--border); border-radius: 8px; overflow: hidden; }
+  .seg button {
+    border: 0; background: var(--surface-1); color: var(--text-secondary);
+    font: inherit; font-size: 13px; padding: 7px 12px; cursor: pointer;
+  }
+  .seg button + button { border-left: 1px solid var(--border); }
+  .seg button.on { background: var(--accent); color: #fff; }
+
+  .hero { display: flex; align-items: baseline; gap: 8px; margin: 4px 0 2px; }
+  .hero .num { font-size: 40px; font-weight: 600; letter-spacing: -0.02em; font-variant-numeric: tabular-nums; }
+  .hero .u { color: var(--text-secondary); }
+  .sub { color: var(--text-muted); font-size: 13px; margin-bottom: 14px; }
+
+  table.out { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+  table.out td { padding: 7px 0; border-top: 1px solid var(--border); vertical-align: top; }
+  table.out td:first-child { color: var(--text-secondary); padding-right: 12px; }
+  table.out td.v { text-align: right; white-space: nowrap; }
+  table.out td.v small { color: var(--text-muted); }
+  .formula { font-size: 12px; color: var(--text-muted); }
+
+  .warn {
+    background: var(--warn-bg); color: var(--warn-text); border-radius: 8px;
+    padding: 8px 10px; font-size: 13px; margin-top: 10px;
+  }
+  .warn::before { content: "⚠ "; }
+  .warn:empty { display: none; }
+
+  .recipe { font-size: 13.5px; color: var(--text-secondary); margin-top: 6px; }
+  .recipe b { color: var(--text-primary); font-variant-numeric: tabular-nums; }
+
+  /* chart */
+  .chart-wrap { position: relative; }
+  svg { display: block; width: 100%; height: auto; overflow: visible; }
+  svg text { fill: var(--text-muted); font-size: 12px; font-variant-numeric: tabular-nums; }
+  .legend { display: flex; gap: 18px; font-size: 13px; color: var(--text-secondary); margin-bottom: 6px; flex-wrap: wrap; }
+  .legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .sw-line { width: 18px; height: 0; border-top: 2px solid; display: inline-block; }
+  .sw-dot { width: 9px; height: 9px; border-radius: 50%; display: inline-block; }
+  .tip {
+    position: absolute; pointer-events: none; background: var(--surface-1);
+    border: 1px solid var(--border); border-radius: 8px; padding: 8px 10px;
+    font-size: 12.5px; box-shadow: 0 4px 14px rgba(0,0,0,.12); white-space: nowrap;
+    opacity: 0; transition: opacity .1s; font-variant-numeric: tabular-nums;
+  }
+  .tip b { color: var(--text-primary); }
+  .tip div { color: var(--text-secondary); }
+
+  details { margin-top: 20px; }
+  details summary { cursor: pointer; color: var(--text-secondary); font-weight: 600; }
+  details .body { color: var(--text-secondary); font-size: 14px; }
+  details code { background: var(--surface-2); padding: 1px 5px; border-radius: 4px; font-size: 13px; }
+  details table { border-collapse: collapse; margin: 8px 0; font-variant-numeric: tabular-nums; }
+  details th, details td { border: 1px solid var(--border); padding: 4px 10px; text-align: right; }
+  details th { background: var(--surface-2); }
+</style>
 </head>
 <body>
-  <div class="container mt-5">
-    <h1>Diffusion Coefficient Calculator</h1>
+<main>
+  <h1>Diffusion in glycerol–water mixtures</h1>
+  <p class="lede">
+    Stokes–Einstein diffusion of a spherical particle, with solvent viscosity predicted from
+    glycerol concentration (fit to Takamura <i>et al.</i>, 2012). Set the glycerol content, a viscosity,
+    or a target diffusion coefficient — the other two follow. Imaging parameters translate
+    <i>D</i> into displacements on your camera.
+  </p>
 
-    <h3>Viscosity of Glycerol Solutions at 20˚C (no salinity) (Takamura et al., 2012. Table 10. 'Physical properties of aqueous glycerol solutions')</h3>
-    <table class="table table-bordered table-striped" style="width: auto; margin: auto;">
-      <thead>
-        <tr>
-          <th>Solvent</th>
-          <th>Viscosity (centiPoise)</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr>
-          <td>H2O</td>
-          <td>1.04</td>
-        </tr>
-        <tr>
-          <td>20% glycerol (w/w)</td>
-          <td>1.84</td>
-        </tr>
-        <tr>
-          <td>40% glycerol (w/w)</td>
-          <td>3.63</td>
-        </tr>
-        <tr>
-          <td>60% glycerol (w/w)</td>
-          <td>11.67</td>
-        </tr>
-        <tr>
-          <td>78% glycerol (w/w)</td>
-          <td>48.79</td>
-        </tr>
-        <tr>
-          <td>91% glycerol (w/w)</td>
-          <td>220.52</td>
-        </tr>
-      </tbody>
-    </table>
+  <div class="grid">
+    <!-- ================= PHYSICAL ================= -->
+    <section class="card">
+      <h2>Physical parameters</h2>
 
-    <form id="calculator-form">
-      <div class="mb-3">
-        <label for="temperature" class="form-label">Temperature (°C)</label>
-        <input type="number" class="form-control" id="temperature" value="20">
+      <div class="row">
+        <div class="field" style="flex:1">
+          <label for="diam">Hydrodynamic diameter</label>
+          <div class="inp"><input id="diam" type="number" step="any" min="0" value="40"><span class="unit">nm</span></div>
+        </div>
+        <div class="field" style="flex:1">
+          <label for="temp">Temperature</label>
+          <div class="inp"><input id="temp" type="number" step="any" min="0" max="100" value="20"><span class="unit">°C</span></div>
+        </div>
       </div>
-      <div class="mb-3">
-        <label for="viscosity" class="form-label">Viscosity (mPa·s) or centiPoise</label>
-        <input type="number" class="form-control" id="viscosity" step="any", value="1.04">
+
+      <div class="linked">
+        <p class="hint">These three are linked. Edit any one; the field you edited last stays fixed when you change size or temperature.</p>
+
+        <div class="field" id="f-gly">
+          <label for="gly">Glycerol <span class="badge">fixed</span></label>
+          <div class="row">
+            <input id="glyRange" type="range" min="0" max="95" step="0.5" value="0" aria-label="Glycerol percent slider">
+            <div class="inp" style="flex:0 0 130px"><input id="gly" type="number" step="any" min="0" max="100" value="0"><span class="unit">% w/w</span></div>
+          </div>
+        </div>
+
+        <div class="field" id="f-eta">
+          <label for="eta">Dynamic viscosity <span class="badge">fixed</span></label>
+          <div class="inp"><input id="eta" type="number" step="any" min="0"><span class="unit">mPa·s (cP)</span></div>
+        </div>
+
+        <div class="field" id="f-D" style="margin-bottom:0">
+          <label for="Dinp">Diffusion coefficient <span class="badge">fixed</span></label>
+          <div class="inp"><input id="Dinp" type="number" step="any" min="0"><span class="unit">µm²/s</span></div>
+        </div>
+        <div class="warn" id="physWarn"></div>
       </div>
-      <div class="mb-3">
-        <label for="frameInterval" class="form-label">Frame Interval (s)</label>
-        <input type="number" class="form-control" id="frameInterval" step="any" value="0.05">
+
+      <div class="field" style="margin-top:14px; margin-bottom:0">
+        <label for="mass">Make a solution</label>
+        <div class="row">
+          <div class="inp" style="flex:0 0 140px"><input id="mass" type="number" step="any" min="0" value="10"><span class="unit">g total</span></div>
+          <div class="recipe" id="recipe"></div>
+        </div>
       </div>
-      <div class="mb-3">
-        <label for="pixelValue" class="form-label">Pixel Value (micron/pixel)</label>
-        <input type="number" class="form-control" id="pixelValue" step="any" value="0.157">
+    </section>
+
+    <!-- ================= IMAGING ================= -->
+    <section class="card">
+      <h2>Imaging parameters</h2>
+      <div class="row">
+        <div class="field" style="flex:1">
+          <label for="dt">Frame interval</label>
+          <div class="inp"><input id="dt" type="number" step="any" min="0" value="50"><span class="unit">ms</span></div>
+        </div>
+        <div class="field" style="flex:1">
+          <label for="texp">Exposure time</label>
+          <div class="inp"><input id="texp" type="number" step="any" min="0" value="20"><span class="unit">ms</span></div>
+        </div>
       </div>
-      <div class="mb-3">
-        <label for="diameter" class="form-label">Particle Diameter (nm)</label>
-        <input type="number" class="form-control" id="diameter" step="any" value="40">
+      <div class="row">
+        <div class="field" style="flex:1">
+          <label for="px">Pixel size (sample plane)</label>
+          <div class="inp"><input id="px" type="number" step="any" min="0" value="0.157"><span class="unit">µm/px</span></div>
+        </div>
+        <div class="field" style="flex:1">
+          <label>Tracking dimensionality</label>
+          <div class="seg" id="dimSeg">
+            <button data-n="1">1D</button><button data-n="2" class="on">2D</button><button data-n="3">3D</button>
+          </div>
+        </div>
       </div>
-      <button type="submit" class="btn btn-primary">Calculate</button>
-    </form>
-    <div class="mt-3">
-      <strong>Diffusion Coefficient:</strong> <span id="result"></span> \( \mu m^2/s \)
-    </div>
-    <div class="mt-3">
-      <strong>Average Distance:</strong> <span id="avgDistance"></span> \( \mu m \)
-    </div>
-    <div class="mt-3">
-      <strong>Average Distance in Pixels:</strong> <span id="avgDistancePixel"></span> \( \text{pixels} \)
-    </div>
+
+      <div class="sub" style="margin:4px 0 2px">Diffusion coefficient</div>
+      <div class="hero"><span class="num" id="Dout">–</span><span class="u">µm²/s</span></div>
+      <div class="sub" id="Dctx"></div>
+
+      <table class="out">
+        <tr><td>RMS step per frame<br><span class="formula" id="fStep"></span></td><td class="v" id="oStep"></td></tr>
+        <tr><td>RMS step per axis<br><span class="formula">√(2DΔt)</span></td><td class="v" id="oAxis"></td></tr>
+        <tr><td>Motion blur during exposure<br><span class="formula" id="fBlur"></span></td><td class="v" id="oBlur"></td></tr>
+        <tr><td>Time to diffuse 1 pixel (RMS)<br><span class="formula" id="fPix"></span></td><td class="v" id="oPix"></td></tr>
+        <tr>
+          <td>Longest frame interval for RMS step ≤
+            <span class="inp" style="display:inline-flex; width:96px; vertical-align:middle; flex:none">
+              <input id="maxStep" type="number" step="any" min="0" value="3" style="padding:3px 6px"><span class="unit" style="padding:3px 6px">px</span>
+            </span>
+          </td>
+          <td class="v" id="oMaxDt"></td>
+        </tr>
+      </table>
+      <div class="warn" id="imgWarn"></div>
+    </section>
+
+    <!-- ================= CHART ================= -->
+    <section class="card span-2">
+      <h2>Viscosity of aqueous glycerol</h2>
+      <div class="legend" id="legend"></div>
+      <div class="chart-wrap" id="chartWrap">
+        <svg id="chart" viewBox="0 0 1040 360" role="img" aria-label="Viscosity versus glycerol mass fraction, log scale"></svg>
+        <div class="tip" id="tip"></div>
+      </div>
+
+      <details>
+        <summary>Model, data &amp; assumptions</summary>
+        <div class="body">
+          <p><b>Stokes–Einstein:</b> <code>D = k<sub>B</sub>T / (3πηd)</code>, with <i>d</i> the hydrodynamic diameter.
+            Mean-squared displacement in <i>n</i> dimensions: <code>⟨r²⟩ = 2nDΔt</code>.</p>
+          <p><b>Viscosity at 20 °C</b> (fit to Takamura <i>et al.</i> 2012, Table 10, zero salinity), with
+            <i>x</i> the glycerol mass fraction:<br>
+            <code>η<sub>20</sub>(x) = η<sub>w</sub> · exp[(Ax + Bx²) / (1 + Cx)]</code>,
+            η<sub>w</sub> = 1.002 mPa·s, A = 2.5139, B = 0.0712, C = −0.6208.</p>
+          <p><b>Temperature:</b> the Takamura data are at 20 °C only. For other temperatures the 20 °C fit is scaled by
+            the ratio η(T, x)/η(20 °C, x) from the Cheng (2008) correlation (<i>Ind. Eng. Chem. Res.</i> 47, 3285).
+            At 20 °C the factor is exactly 1.</p>
+          <p><b>Range:</b> data span 0–91 % w/w. Above that the fit is an extrapolation and underestimates
+            viscosity (it gives ~916 mPa·s for pure glycerol; the measured value is ~1410 mPa·s at 20 °C).</p>
+          <table>
+            <thead><tr><th>Glycerol (% w/w)</th><th>Measured η (mPa·s)</th><th>Fit η (mPa·s)</th></tr></thead>
+            <tbody id="dataTable"></tbody>
+          </table>
+          <p>Glycerol volume in the recipe uses ρ = 1.261 g/mL and water ρ = 0.998 g/mL (20 °C). Weigh glycerol when you can:
+            it is too viscous to pipette accurately.</p>
+        </div>
+      </details>
+    </section>
   </div>
+</main>
 
-  <script>
-    document.addEventListener("DOMContentLoaded", function() {
-      const form = document.getElementById("calculator-form");
-      form.addEventListener("submit", function(e) {
-        e.preventDefault();
-        const T = parseFloat(document.getElementById("temperature").value) + 273.15; // Convert to Kelvin
-        const eta = parseFloat(document.getElementById("viscosity").value) * 1e-3; // Convert to kg/m/s
-        const d = parseFloat(document.getElementById("diameter").value) * 1e-9; // Convert to meters
-        const kB = 1.380649e-23; // Boltzmann constant in m^2 kg s^-2 K^-1
-        
-        let D = (kB * T) / (3 * Math.PI * eta * d);
-        D *= 1e12;
+<script>
+(() => {
+  // ---------- constants & models ----------
+  const kB = 1.380649e-23;
+  const MU_W = 1.002, A = 2.513872, B = 0.071182, C = -0.620841;
+  const DATA = [[0, 1.04], [0.20, 1.84], [0.40, 3.63], [0.60, 11.67], [0.78, 48.79], [0.91, 220.52]];
+  const X_MAX_DATA = 0.91;
 
-        let frameInterval = parseFloat(document.getElementById("frameInterval").value); // Frame interval in seconds
-        let pixelValue = parseFloat(document.getElementById("pixelValue").value); // Micron/pixel
+  const eta20 = x => MU_W * Math.exp((A * x + B * x * x) / (1 + C * x));
 
-        let avgDistance = Math.sqrt(D * frameInterval); // Average distance in micron
-        let avgDistancePixel = avgDistance / pixelValue; // Average distance in pixels
+  // Cheng (2008) correlation, T in °C, x mass fraction, returns mPa·s
+  function cheng(T, x) {
+    const muW = 1.790 * Math.exp((-1230 - T) * T / (36100 + 360 * T));
+    const muG = 12100 * Math.exp((-1233 + T) * T / (9900 + 70 * T));
+    const a = 0.705 - 0.0017 * T;
+    const b = (4.9 + 0.036 * T) * Math.pow(a, 2.5);
+    const alpha = 1 - x + (a * b * x * (1 - x)) / (a * x + b * (1 - x));
+    return Math.pow(muW, alpha) * Math.pow(muG, 1 - alpha);
+  }
+  const etaT = (x, T) => eta20(x) * cheng(T, x) / cheng(20, x);
 
-        document.getElementById("result").textContent = D.toFixed(3);
-        document.getElementById("avgDistance").textContent = avgDistance.toFixed(3);
-        document.getElementById("avgDistancePixel").textContent = avgDistancePixel.toFixed(3);
+  // invert etaT for x in [0,1] by bisection (monotone increasing)
+  function invertEta(eta, T) {
+    const lo0 = etaT(0, T), hi0 = etaT(1, T);
+    if (eta < lo0) return { x: 0, status: "low" };
+    if (eta > hi0) return { x: 1, status: "high" };
+    let lo = 0, hi = 1;
+    for (let i = 0; i < 60; i++) {
+      const m = (lo + hi) / 2;
+      if (etaT(m, T) < eta) lo = m; else hi = m;
+    }
+    return { x: (lo + hi) / 2, status: "ok" };
+  }
 
-        // Trigger MathJax to re-render equations
-        MathJax.typeset();
-      });
+  // D [µm²/s] from eta [mPa·s], d [nm], T [°C]
+  const D_of = (eta, d, T) => kB * (T + 273.15) / (3 * Math.PI * eta * 1e-3 * d * 1e-9) * 1e12;
+  const eta_of = (D, d, T) => kB * (T + 273.15) / (3 * Math.PI * D * 1e-12 * d * 1e-9) * 1e3;
+
+  // ---------- formatting ----------
+  function sig(v, n = 3) {
+    if (!isFinite(v)) return "–";
+    if (v === 0) return "0";
+    const a = Math.abs(v);
+    if (a >= 1e5 || a < 1e-3) return v.toExponential(n - 1).replace("e", "×10^").replace(/\^\+?(-?\d+)/, (_, e) => sup(e));
+    const dec = Math.max(0, n - 1 - Math.floor(Math.log10(a)));
+    return v.toFixed(dec);
+  }
+  function sup(e) { const m = { "-": "⁻", 0: "⁰", 1: "¹", 2: "²", 3: "³", 4: "⁴", 5: "⁵", 6: "⁶", 7: "⁷", 8: "⁸", 9: "⁹" }; return [...String(e)].map(c => m[c]).join(""); }
+  function fmtTime(s) {
+    if (!isFinite(s)) return "–";
+    if (s < 1e-3) return sig(s * 1e6) + " µs";
+    if (s < 1) return sig(s * 1e3) + " ms";
+    if (s < 120) return sig(s) + " s";
+    if (s < 7200) return sig(s / 60) + " min";
+    return sig(s / 3600) + " h";
+  }
+  const toInputVal = (v, n = 4) => isFinite(v) ? String(+v.toPrecision(n)) : "";
+
+  // ---------- state ----------
+  const $ = id => document.getElementById(id);
+  const S = { driver: "gly", gly: 0, eta: null, D: null, nDim: 2 };
+  const num = id => parseFloat($(id).value);
+
+  function solve() {
+    const d = num("diam"), T = num("temp");
+    const warn = [];
+    if (!(d > 0) || !isFinite(T)) return { d, T, warn: ["Enter a positive diameter and a temperature."] };
+    if (T < 0 || T > 100) warn.push("Temperature is outside 0–100 °C; the viscosity correction is not valid there.");
+
+    let x, eta, D;
+    if (S.driver === "gly") {
+      x = Math.min(Math.max(S.gly / 100, 0), 1);
+      eta = etaT(x, T); D = D_of(eta, d, T);
+    } else {
+      if (S.driver === "eta") { eta = S.eta; D = D_of(eta, d, T); }
+      else { D = S.D; eta = eta_of(D, d, T); }
+      if (!(eta > 0)) return { d, T, warn: ["Enter a positive value."] };
+      const inv = invertEta(eta, T);
+      x = inv.x;
+      if (inv.status === "low") warn.push(`This needs η = ${sig(eta)} mPa·s, below pure water at ${T} °C (${sig(etaT(0, T))} mPa·s). Glycerol can't get you there — use a larger particle or lower temperature.`);
+      if (inv.status === "high") warn.push(`This needs η = ${sig(eta)} mPa·s, above what glycerol–water can give at ${T} °C.`);
+      if (inv.status !== "ok") x = NaN;
+    }
+    if (x > X_MAX_DATA) warn.push(`Above ${X_MAX_DATA * 100}% w/w the viscosity model is extrapolated and likely underestimates η (and overestimates D).`);
+    return { d, T, x, eta, D, warn };
+  }
+
+  function render(skipField) {
+    const r = solve();
+    // linked fields
+    for (const [id, fid] of [["gly", "f-gly"], ["eta", "f-eta"], ["D", "f-D"]]) $(fid).classList.toggle("driver", S.driver === id);
+    if (skipField !== "gly") $("gly").value = isFinite(r.x) ? toInputVal(r.x * 100, 3) : "";
+    if (isFinite(r.x)) $("glyRange").value = Math.min(r.x * 100, 95);
+    if (skipField !== "eta") $("eta").value = toInputVal(r.eta);
+    if (skipField !== "D") $("Dinp").value = toInputVal(r.D);
+    $("physWarn").innerHTML = r.warn.join("<br>");
+
+    // recipe
+    const M = num("mass");
+    if (isFinite(r.x) && M > 0) {
+      const mg = M * r.x, mw = M - mg;
+      $("recipe").innerHTML = `<b>${sig(mg)} g</b> glycerol (≈${sig(mg / 1.261)} mL) + <b>${sig(mw)} g</b> water (≈${sig(mw / 0.998)} mL)`;
+    } else $("recipe").textContent = "";
+
+    // imaging
+    const n = S.nDim, dt = num("dt") * 1e-3, te = num("texp") * 1e-3, px = num("px");
+    const D = r.D;
+    $("Dout").textContent = sig(D);
+    $("Dctx").textContent = isFinite(D)
+      ? `${+r.d.toPrecision(4)} nm sphere in ${isFinite(r.x) ? sig(r.x * 100) + "% glycerol" : "custom medium"}, η = ${sig(r.eta)} mPa·s at ${r.T} °C`
+      : "";
+    const step = Math.sqrt(2 * n * D * dt), axis = Math.sqrt(2 * D * dt), blur = Math.sqrt(2 * n * D * te);
+    const both = (um) => `${sig(um)} µm <small>·</small> <b>${sig(um / px)} px</b>`;
+    $("fStep").textContent = `√(2nDΔt), n = ${n}`;
+    $("fBlur").textContent = `√(2nD·t_exp)`;
+    $("fPix").textContent = `p² / (2nD)`;
+    $("oStep").innerHTML = both(step);
+    $("oAxis").innerHTML = both(axis);
+    $("oBlur").innerHTML = both(blur);
+    $("oPix").textContent = fmtTime(px * px / (2 * n * D));
+    const ms = num("maxStep");
+    $("oMaxDt").textContent = fmtTime((ms * px) ** 2 / (2 * n * D));
+
+    const iw = [];
+    if (te > dt) iw.push("Exposure is longer than the frame interval.");
+    if (step / px > 5) iw.push(`RMS step is ${sig(step / px)} px per frame — linking will be ambiguous at moderate densities. Shorten the interval or slow diffusion.`);
+    if (blur / px > 1) iw.push(`Particles move ${sig(blur / px)} px during exposure — expect blurred, elongated PSFs and biased localisation.`);
+    $("imgWarn").innerHTML = iw.join("<br>");
+
+    drawChart(r);
+  }
+
+  // ---------- chart ----------
+  const W = 1040, H = 360, M = { l: 64, r: 20, t: 14, b: 44 };
+  const pw = W - M.l - M.r, ph = H - M.t - M.b;
+  const yMin = 0.3, yMax = 2000;
+  const sx = x => M.l + x * pw;
+  const sy = v => M.t + ph * (1 - (Math.log10(v) - Math.log10(yMin)) / (Math.log10(yMax) - Math.log10(yMin)));
+  const NS = "http://www.w3.org/2000/svg";
+  function el(tag, attrs, parent) {
+    const e = document.createElementNS(NS, tag);
+    for (const k in attrs) e.setAttribute(k, attrs[k]);
+    if (parent) parent.appendChild(e);
+    return e;
+  }
+  const pathOf = f => { let s = ""; for (let i = 0; i <= 200; i++) { const x = i / 200; s += (i ? "L" : "M") + sx(x).toFixed(1) + "," + sy(f(x)).toFixed(1); } return s; };
+  let lastR = null;
+
+  function drawChart(r) {
+    lastR = r;
+    const svg = $("chart"); svg.innerHTML = "";
+    const showT = isFinite(r.T) && Math.abs(r.T - 20) > 1e-9;
+
+    // extrapolation band
+    el("rect", { x: sx(X_MAX_DATA), y: M.t, width: sx(1) - sx(X_MAX_DATA), height: ph, fill: "var(--surface-2)" }, svg);
+    const ex = el("text", { x: sx((X_MAX_DATA + 1) / 2), y: M.t + 14, "text-anchor": "middle" }, svg); ex.textContent = "extrapolated";
+
+    // grid + y axis
+    for (const v of [1, 10, 100, 1000]) {
+      el("line", { x1: M.l, x2: W - M.r, y1: sy(v), y2: sy(v), stroke: "var(--grid)", "stroke-width": 1 }, svg);
+      const t = el("text", { x: M.l - 8, y: sy(v) + 4, "text-anchor": "end" }, svg); t.textContent = v;
+    }
+    for (let i = 0; i <= 10; i++) {
+      const t = el("text", { x: sx(i / 10), y: H - M.b + 18, "text-anchor": "middle" }, svg); t.textContent = i * 10;
+    }
+    el("line", { x1: M.l, x2: W - M.r, y1: H - M.b, y2: H - M.b, stroke: "var(--text-muted)", "stroke-width": 1 }, svg);
+    const xl = el("text", { x: M.l + pw / 2, y: H - 6, "text-anchor": "middle" }, svg); xl.textContent = "Glycerol (% w/w)";
+    const yl = el("text", { x: 14, y: M.t + ph / 2, "text-anchor": "middle", transform: `rotate(-90 14 ${M.t + ph / 2})` }, svg); yl.textContent = "η (mPa·s, log)";
+
+    // curves
+    el("path", { d: pathOf(eta20), fill: "none", stroke: "var(--series-1)", "stroke-width": 2 }, svg);
+    if (showT) el("path", { d: pathOf(x => etaT(x, r.T)), fill: "none", stroke: "var(--series-2)", "stroke-width": 2, "stroke-dasharray": "6 4" }, svg);
+
+    // data points
+    for (const [x, v] of DATA) el("circle", { cx: sx(x), cy: sy(v), r: 4.5, fill: "var(--text-primary)", stroke: "var(--surface-1)", "stroke-width": 2 }, svg);
+
+    // current state marker
+    if (isFinite(r.x) && isFinite(r.eta)) {
+      const cx = sx(r.x), cy = sy(Math.min(Math.max(r.eta, yMin), yMax));
+      el("line", { x1: cx, x2: cx, y1: cy, y2: H - M.b, stroke: "var(--accent)", "stroke-width": 1, "stroke-dasharray": "3 3" }, svg);
+      el("line", { x1: M.l, x2: cx, y1: cy, y2: cy, stroke: "var(--accent)", "stroke-width": 1, "stroke-dasharray": "3 3" }, svg);
+      el("circle", { cx, cy, r: 6, fill: "var(--accent)", stroke: "var(--surface-1)", "stroke-width": 2 }, svg);
+      const lbl = el("text", { x: cx + (r.x > 0.8 ? -10 : 10), y: cy - 10, "text-anchor": r.x > 0.8 ? "end" : "start", style: "fill:var(--text-primary);font-weight:600" }, svg);
+      lbl.textContent = `${sig(r.x * 100)}% · ${sig(r.eta)} mPa·s`;
+    }
+
+    // hover layer
+    const hair = el("line", { y1: M.t, y2: H - M.b, stroke: "var(--text-muted)", "stroke-width": 1, opacity: 0 }, svg);
+    const hit = el("rect", { x: M.l, y: M.t, width: pw, height: ph, fill: "transparent", style: "cursor:crosshair" }, svg);
+    hit.addEventListener("pointermove", ev => onHover(ev, hair));
+    hit.addEventListener("pointerleave", () => { hair.setAttribute("opacity", 0); $("tip").style.opacity = 0; });
+    hit.addEventListener("click", ev => {
+      const x = pointerX(ev);
+      S.driver = "gly"; S.gly = Math.round(x * 1000) / 10; render();
     });
-  </script>
+
+    // legend
+    $("legend").innerHTML =
+      `<span><i class="sw-dot" style="background:var(--text-primary)"></i>Takamura 2012, 20 °C</span>` +
+      `<span><i class="sw-line" style="border-color:var(--series-1)"></i>Fit, 20 °C</span>` +
+      (showT ? `<span><i class="sw-line" style="border-color:var(--series-2);border-top-style:dashed"></i>Fit scaled to ${r.T} °C</span>` : "") +
+      `<span style="color:var(--text-muted)">Click the chart to set glycerol %</span>`;
+  }
+
+  function pointerX(ev) {
+    const svg = $("chart"), pt = svg.createSVGPoint();
+    pt.x = ev.clientX; pt.y = ev.clientY;
+    const p = pt.matrixTransform(svg.getScreenCTM().inverse());
+    return Math.min(Math.max((p.x - M.l) / pw, 0), 1);
+  }
+
+  function onHover(ev, hair) {
+    const r = lastR; if (!r || !(r.d > 0)) return;
+    const x = pointerX(ev);
+    hair.setAttribute("x1", sx(x)); hair.setAttribute("x2", sx(x)); hair.setAttribute("opacity", 1);
+    const e20 = eta20(x), eT = etaT(x, r.T);
+    const showT = Math.abs(r.T - 20) > 1e-9;
+    const tip = $("tip");
+    tip.innerHTML = `<b>${sig(x * 100)}% w/w glycerol</b>` +
+      `<div>η (20 °C): ${sig(e20)} mPa·s</div>` +
+      (showT ? `<div>η (${r.T} °C): ${sig(eT)} mPa·s</div>` : "") +
+      `<div>D (${+r.d.toPrecision(4)} nm, ${r.T} °C): ${sig(D_of(eT, r.d, r.T))} µm²/s</div>`;
+    const wrap = $("chartWrap").getBoundingClientRect();
+    let left = ev.clientX - wrap.left + 14;
+    if (left + tip.offsetWidth > wrap.width) left = ev.clientX - wrap.left - tip.offsetWidth - 14;
+    tip.style.left = left + "px";
+    tip.style.top = (ev.clientY - wrap.top - 10) + "px";
+    tip.style.opacity = 1;
+  }
+
+  // ---------- data table ----------
+  $("dataTable").innerHTML = DATA.map(([x, v]) => `<tr><td>${x * 100}</td><td>${v}</td><td>${eta20(x).toFixed(2)}</td></tr>`).join("");
+
+  // ---------- wiring ----------
+  $("glyRange").addEventListener("input", e => { S.driver = "gly"; S.gly = +e.target.value; render(); });
+  $("gly").addEventListener("input", e => { const v = parseFloat(e.target.value); if (isFinite(v)) { S.driver = "gly"; S.gly = v; render("gly"); } });
+  $("eta").addEventListener("input", e => { const v = parseFloat(e.target.value); if (v > 0) { S.driver = "eta"; S.eta = v; render("eta"); } });
+  $("Dinp").addEventListener("input", e => { const v = parseFloat(e.target.value); if (v > 0) { S.driver = "D"; S.D = v; render("D"); } });
+  for (const id of ["gly", "eta", "Dinp"]) $(id).addEventListener("change", () => render());
+  for (const id of ["diam", "temp", "dt", "texp", "px", "maxStep", "mass"]) $(id).addEventListener("input", () => render());
+  $("dimSeg").addEventListener("click", e => {
+    const b = e.target.closest("button"); if (!b) return;
+    S.nDim = +b.dataset.n;
+    for (const x of $("dimSeg").children) x.classList.toggle("on", x === b);
+    render();
+  });
+
+  render();
+})();
+</script>
 </body>
 </html>
